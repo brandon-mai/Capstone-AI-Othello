@@ -117,6 +117,10 @@ class Grid:
         if self.GAME.gameOver:
             window.blit(self.endScreen(), (240, 240))
 
+    def markRecentMove(self, window, move):
+        if move is not None:
+            pygame.draw.rect(window, 'Red', (80 + (move[1] * 80) + 30, 80 + (move[0] * 80) + 30, 20, 20))
+
     def printGameLogicBoard(self):
         print('  | A | B | C | D | E | F | G | H |')
         for i, row in enumerate(self.gridLogic):

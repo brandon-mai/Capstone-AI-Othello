@@ -1,6 +1,6 @@
 # Pygame Othello for Capstone Project
 
-## What did I change? (compared to Duc An's version)
+## What did I change?
 
 <img src="attachments/human_as_black.png">
 
@@ -10,13 +10,19 @@ will be black piece and start from this more standard position.
 <br>
 <br>
 
+<img src="attachments/random_thua_sml.png">
+
+Red-marked most recent move, making it easier to track while playing
+against external engines.
+<br>
+<br>
+<br>
+
 <img src="attachments/changeable_player.png">
 
-Added another AI player as the first player, so we can maybe compare
-different heuristics by letting them fight.
-- Human vs. AI: ```human_player = 1``` and ```player_AI_max = 0```
-- AI vs. AI: ```human_player = 0``` and ```player_AI_max = 1```
-<!--end-->
+Added another AI player as the first player. You can change the gamemode
+by directly modifying the parameter of ```Othello(mode)``` in main.py
+<br>
 <br>
 <br>
 
