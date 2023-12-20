@@ -34,6 +34,9 @@ in othello.py. Default method is computerRandom, which picks a random valid move
 
 Added heuristics.py file, completely separate from utility_functions.py
 for easier modifications.
+<br>
+<br>
+<br>
 
 ## To be added in *very* near future
 - More heuristics
