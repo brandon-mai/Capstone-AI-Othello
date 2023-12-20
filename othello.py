@@ -17,8 +17,8 @@ class Othello:
         self.player_AI_max = 0  # edit to match player1 - human or AI
         self.player_AI_min = -1
 
-        self.player1 = 1  # do not edit, white player, maximizing player
-        self.player2 = -1  # do not edit, black player, minimizing player
+        self.player1 = 1  # do not edit, black player, maximizing player
+        self.player2 = -1  # do not edit, white player, minimizing player
 
         self.firstPlayer = self.player1  # edit this line to select who plays first, player1 or player2
         self.currentPlayer = self.firstPlayer
