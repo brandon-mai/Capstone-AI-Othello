@@ -13,8 +13,8 @@ class Othello:
 
         # THIS PLACE CAN BE MODIFIED #
 
-        base_height = 600  # window height, MUST be multiple of 10
-        mode = 2  # 1: human vs. AI | 2: AI vs. AI | 3: AI vs. engine (human replicate engine's move)
+        base_height = 800  # window height, MUST be multiple of 10
+        mode = 1  # 1: human vs. AI | 2: AI vs. AI | 3: AI vs. engine (human replicate engine's move)
 
         # END OF MODIFICATION #
 
