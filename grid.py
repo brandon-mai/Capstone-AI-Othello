@@ -43,17 +43,20 @@ class Grid:
         return imageDict
 
     def createbgimg(self):
+        t1, t2 = 'A0', 'B0'  # tile squares
+        s1, s2, s3, s4 = 'D0', 'E1', 'D2', 'C1'  # side squares, clockwise
+        c1, c2, c3, c4 = 'C0', 'E0', 'E2', 'C2'  # corner squares, clockwise
         gridBg = [
-            ['C0', 'D0', 'D0', 'D0', 'D0', 'D0', 'D0', 'D0', 'D0', 'E0'],
-            ['C1', 'A0', 'B0', 'A0', 'B0', 'A0', 'B0', 'A0', 'B0', 'E1'],
-            ['C1', 'B0', 'A0', 'B0', 'A0', 'B0', 'A0', 'B0', 'A0', 'E1'],
-            ['C1', 'A0', 'B0', 'A0', 'B0', 'A0', 'B0', 'A0', 'B0', 'E1'],
-            ['C1', 'B0', 'A0', 'B0', 'A0', 'B0', 'A0', 'B0', 'A0', 'E1'],
-            ['C1', 'A0', 'B0', 'A0', 'B0', 'A0', 'B0', 'A0', 'B0', 'E1'],
-            ['C1', 'B0', 'A0', 'B0', 'A0', 'B0', 'A0', 'B0', 'A0', 'E1'],
-            ['C1', 'A0', 'B0', 'A0', 'B0', 'A0', 'B0', 'A0', 'B0', 'E1'],
-            ['C1', 'B0', 'A0', 'B0', 'A0', 'B0', 'A0', 'B0', 'A0', 'E1'],
-            ['C2', 'D2', 'D2', 'D2', 'D2', 'D2', 'D2', 'D2', 'D2', 'E2'],
+            [c1, s1, s1, s1, s1, s1, s1, s1, s1, c2],
+            [s4, t1, t2, t1, t2, t1, t2, t1, t2, s2],
+            [s4, t2, t1, t2, t1, t2, t1, t2, t1, s2],
+            [s4, t1, t2, t1, t2, t1, t2, t1, t2, s2],
+            [s4, t2, t1, t2, t1, t2, t1, t2, t1, s2],
+            [s4, t1, t2, t1, t2, t1, t2, t1, t2, s2],
+            [s4, t2, t1, t2, t1, t2, t1, t2, t1, s2],
+            [s4, t1, t2, t1, t2, t1, t2, t1, t2, s2],
+            [s4, t2, t1, t2, t1, t2, t1, t2, t1, s2],
+            [c4, s3, s3, s3, s3, s3, s3, s3, s3, c3],
         ]
         image = pygame.Surface((self.tile_size * 12, self.tile_size * 12))
         for j, row in enumerate(gridBg):
