@@ -140,10 +140,11 @@ class Grid:
         return endScreenImg
 
     def drawGrid(self, window):
+        tile = self.tile_size
         window.blit(self.gridBg, (0, 0))
 
-        window.blit(self.drawScore('Black', self.player1Score), (self.tile_size * 11.2, self.tile_size))
-        window.blit(self.drawScore('White', self.player2Score), (self.tile_size * 11.2, self.tile_size * 2))
+        window.blit(self.drawScore('Black', self.player1Score), (tile * 11.2, tile))
+        window.blit(self.drawScore('White', self.player2Score), (tile * 11.2, tile * 2))
 
         for token in self.tokens.values():
             token.draw(window)
@@ -152,12 +153,11 @@ class Grid:
         if self.GAME.currentPlayer == self.GAME.human_player:
             for move in availMoves:
                 pygame.draw.rect(window, 'White',
-                                 (self.tile_size + (move[1] * self.tile_size) + self.tile_size * (3 / 8),
-                                  self.tile_size + (move[0] * self.tile_size) + self.tile_size * (3 / 8),
-                                  self.tile_size / 4, self.tile_size / 4))
+                                 (tile + (move[1] * tile) + tile * (3 / 8), tile + (move[0] * tile) + tile * (3 / 8),
+                                  tile / 4, tile / 4))
 
         if self.GAME.gameOver:
-            window.blit(self.endScreen(), (self.tile_size * 3, self.tile_size * 3))
+            window.blit(self.endScreen(), (tile * 3, tile * 3))
 
     def markRecentMove(self, window, move):
         if move is not None:
