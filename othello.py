@@ -1,5 +1,5 @@
 import pygame
-import random
+import copy
 from grid import Grid
 from computer import ComputerPlayer
 from heuristics import *
@@ -13,7 +13,7 @@ class Othello:
 
         # THIS PLACE CAN BE MODIFIED #
 
-        base_height = 800  # window height, MUST be multiple of 10
+        base_height = 600  # window height, MUST be multiple of 10
         mode = 1  # 1: human vs. AI | 2: AI vs. AI | 3: AI vs. engine (human replicate engine's move)
 
         # END OF MODIFICATION #
@@ -38,8 +38,11 @@ class Othello:
         self.columns = 8
 
         self.recent_move = None
+        self.human_recent_move = None
+        self.prev_states = list()
         self.gameOver = True
         self.turns = 1
+        self.rollback_turn = False
         self.forfeited_turns = 0
 
         self.grid = Grid(self.rows, self.columns, (self.tile_size, self.tile_size), self)
@@ -72,8 +75,9 @@ class Othello:
                             pass
                         else:
                             if (y, x) in validCells:
+                                self.prev_states.append((copy.deepcopy(self.grid.gridLogic), self.human_recent_move, self.recent_move))
                                 self.grid.insertToken(self.grid.gridLogic, self.currentPlayer, y, x)
-                                self.recent_move = (y, x)
+                                self.recent_move = self.human_recent_move = (y, x)
                                 self.turns += 1
                                 swappableTiles = self.grid.swappableTiles(y, x, self.grid.gridLogic, self.currentPlayer)
                                 for tile in swappableTiles:
@@ -83,6 +87,17 @@ class Othello:
                                 self.forfeited_turns = 0
                                 self.time = pygame.time.get_ticks()
 
+                    if self.currentPlayer == self.human_player and not self.gameOver and self.turns >= 3:
+                        x, y = pygame.mouse.get_pos()
+                        if x >= tile * 10.8 and x <= tile * 12.4 and y >= tile * 8 and y <= tile * 9:
+                            prev_board, prev_human_recent_move, prev_recent_move = self.prev_states.pop()
+                            self.grid.recoverGrid(prev_board)
+                            self.human_recent_move = prev_human_recent_move
+                            self.recent_move = prev_recent_move
+                            self.turns -= 2
+                            print(self.grid.gridLogic)
+                            return
+
                     if self.gameOver:
                         x, y = pygame.mouse.get_pos()
                         if x >= tile * 4 and x <= tile * 6 and y >= tile * 5 and y <= tile * 6:
@@ -90,6 +105,8 @@ class Othello:
                             self.gameOver = False
                             self.currentPlayer = self.player1
                             self.recent_move = None
+                            self.human_recent_move = None
+                            self.prev_states = list()
                             self.turns = 1
 
     def update(self):
@@ -161,4 +178,5 @@ class Othello:
         self.grid.drawGrid(self.screen)
         self.grid.markRecentMove(self.screen, self.recent_move)
         self.grid.drawTurns(self.screen, self.turns)
+        self.grid.drawRollbackButton(self.screen, self.human_player)
         pygame.display.update()

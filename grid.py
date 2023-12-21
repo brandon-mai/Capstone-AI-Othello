@@ -1,5 +1,5 @@
 from utility_functions import *
-
+import copy
 
 # Grid and Token classes definition
 # do not touch this file, my man
@@ -79,6 +79,18 @@ class Grid:
 
         return grid
 
+    def recoverGrid(self, template):
+        self.tokens.clear()
+        self.gridLogic = copy.deepcopy(template)
+        rows, cols = len(self.gridLogic), len(self.gridLogic[0])
+        for y in range(rows):
+            for x in range(cols):
+                tile = self.gridLogic[y][x]
+                if tile == 1:
+                    self.tokens[(y, x)] = Token(1, y, x, self.tile_size, self.blacktoken, self.GAME)
+                elif tile == -1:
+                    self.tokens[(y, x)] = Token(-1, y, x, self.tile_size, self.whitetoken, self.GAME)
+
     def calculatePlayerScore(self, player):
         score = 0
         for row in self.gridLogic:
@@ -93,7 +105,14 @@ class Grid:
 
     def drawTurns(self, window, turns):
         textImg = self.font.render(f'Turn : {turns}', 1, 'White')
-        window.blit(textImg, (self.tile_size * 11, self.tile_size * 4))
+        window.blit(textImg, (self.tile_size * 11.2, self.tile_size * 4))
+
+    def drawRollbackButton(self, window, isHuman):
+        tile = self.tile_size
+        if isHuman:
+            pygame.draw.rect(window, 'White', (tile * 10.8, tile * 8, tile * 1.6, tile))
+            textImg = self.font.render('Rollback', 1, 'Black')
+            window.blit(textImg, (self.tile_size * 11.18, self.tile_size * 8.34))
 
     def endScreen(self):
         tile = self.tile_size
@@ -113,8 +132,8 @@ class Grid:
     def drawGrid(self, window):
         window.blit(self.gridBg, (0, 0))
 
-        window.blit(self.drawScore('Black', self.player1Score), (self.tile_size * 11, self.tile_size))
-        window.blit(self.drawScore('White', self.player2Score), (self.tile_size * 11, self.tile_size * 2))
+        window.blit(self.drawScore('Black', self.player1Score), (self.tile_size * 11.2, self.tile_size))
+        window.blit(self.drawScore('White', self.player2Score), (self.tile_size * 11.2, self.tile_size * 2))
 
         for token in self.tokens.values():
             token.draw(window)
