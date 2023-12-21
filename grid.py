@@ -91,6 +91,10 @@ class Grid:
         textImg = self.font.render(f'{player} : {score}', 1, 'White')
         return textImg
 
+    def drawTurns(self, window, turns):
+        textImg = self.font.render(f'Turn : {turns}', 1, 'White')
+        window.blit(textImg, (self.tile_size * 11, self.tile_size * 4))
+
     def endScreen(self):
         tile = self.tile_size
         if self.GAME.gameOver:
@@ -99,7 +103,7 @@ class Grid:
                 else "White Won!!" if self.player1Score < self.player2Score \
                 else "Tie!!"
             endText = self.font.render(message, 1, 'White')
-            endScreenImg.blit(endText, (0, 0))
+            endScreenImg.blit(endText, (tile / 2, tile / 2))
             newGame = pygame.draw.rect(endScreenImg, 'White',
                                        (tile, tile * 2, tile * 2, tile))
             newGameText = self.font.render('Play Again', 1, 'Black')

@@ -20,7 +20,8 @@ class Othello:
 
         self.tile_size = base_height // 10
         self.screen = pygame.display.set_mode((base_height * (4/3), base_height))
-        pygame.display.set_caption('Othello')
+        caption = f'Othello - {'Human vs. AI' if mode == 1 else 'AI vs. AI' if mode == 2 else 'AI vs. Engine'}'
+        pygame.display.set_caption(caption)
 
         self.human_player = 1 if mode == 1 else 0 if mode == 2 else -1
         self.player_AI_max = 0 if mode == 1 or mode == 3 else 1
@@ -29,8 +30,7 @@ class Othello:
         self.player1 = 1  # black player
         self.player2 = -1  # white player
 
-        self.firstPlayer = self.player1  # black always goes first
-        self.currentPlayer = self.firstPlayer
+        self.currentPlayer = self.player1  # black always goes first
 
         self.time = 0
 
@@ -39,6 +39,7 @@ class Othello:
 
         self.recent_move = None
         self.gameOver = True
+        self.turns = 1
         self.forfeited_turns = 0
 
         self.grid = Grid(self.rows, self.columns, (self.tile_size, self.tile_size), self)
@@ -73,6 +74,7 @@ class Othello:
                             if (y, x) in validCells:
                                 self.grid.insertToken(self.grid.gridLogic, self.currentPlayer, y, x)
                                 self.recent_move = (y, x)
+                                self.turns += 1
                                 swappableTiles = self.grid.swappableTiles(y, x, self.grid.gridLogic, self.currentPlayer)
                                 for tile in swappableTiles:
                                     self.grid.animateTransitions(tile, self.currentPlayer)
@@ -86,11 +88,13 @@ class Othello:
                         if x >= tile * 4 and x <= tile * 6 and y >= tile * 5 and y <= tile * 6:
                             self.grid.newGame()
                             self.gameOver = False
-                            self.currentPlayer = self.firstPlayer
+                            self.currentPlayer = self.player1
+                            self.recent_move = None
+                            self.turns = 1
 
     def update(self):
-        # player_AI_min's turn
-        if self.currentPlayer == self.player_AI_min:
+        # player_AI_min's turn (white AI)
+        if self.currentPlayer == self.player_AI_min and not self.gameOver:
             new_time = pygame.time.get_ticks()
             if new_time - self.time >= 100:
                 if not self.grid.findAvailMoves(self.grid.gridLogic, self.currentPlayer):
@@ -101,11 +105,12 @@ class Othello:
                     self.currentPlayer *= -1
                 if self.currentPlayer == self.player_AI_min:
 
-                    # cell, score = self.computerPlayer.computerHard(self.grid.gridLogic, coinParity, 5, -64, 64, self.player_AI_min)
-                    cell, score = self.computerPlayer.computerRandom(self.grid.gridLogic, self.player_AI_min)
+                    cell, score = self.computerPlayer.computerHard(self.grid.gridLogic, coinParity, 3, -64, 64, self.player_AI_min)
+                    # cell, score = self.computerPlayer.computerRandom(self.grid.gridLogic, self.player_AI_min)
 
                     self.grid.insertToken(self.grid.gridLogic, self.currentPlayer, cell[0], cell[1])
                     self.recent_move = cell
+                    self.turns += 1
                     swappableTiles = self.grid.swappableTiles(cell[0], cell[1], self.grid.gridLogic, self.currentPlayer)
                     for tile in swappableTiles:
                         self.grid.animateTransitions(tile, self.currentPlayer)
@@ -113,8 +118,8 @@ class Othello:
                     self.currentPlayer *= -1
                     self.forfeited_turns = 0
 
-        # player_AI_max's turn
-        if self.currentPlayer == self.player_AI_max:
+        # player_AI_max's turn (black AI)
+        if self.currentPlayer == self.player_AI_max and not self.gameOver:
             new_time = pygame.time.get_ticks()
             if new_time - self.time >= 100:
                 if not self.grid.findAvailMoves(self.grid.gridLogic, self.currentPlayer):
@@ -125,11 +130,12 @@ class Othello:
                     self.currentPlayer *= -1
                 if self.currentPlayer == self.player_AI_max:
 
-                    # cell, score = self.computerPlayer.computerHard(self.grid.gridLogic, coinParity, 5, -64, 64, self.player_AI_max)
+                    # cell, score = self.computerPlayer.computerHard(self.grid.gridLogic, coinParity, 3, -64, 64, self.player_AI_max)
                     cell, score = self.computerPlayer.computerRandom(self.grid.gridLogic, self.player_AI_max)
 
                     self.grid.insertToken(self.grid.gridLogic, self.currentPlayer, cell[0], cell[1])
                     self.recent_move = cell
+                    self.turns += 1
                     swappableTiles = self.grid.swappableTiles(cell[0], cell[1], self.grid.gridLogic, self.currentPlayer)
                     for tile in swappableTiles:
                         self.grid.animateTransitions(tile, self.currentPlayer)
@@ -154,4 +160,5 @@ class Othello:
         self.screen.fill((0, 0, 0))
         self.grid.drawGrid(self.screen)
         self.grid.markRecentMove(self.screen, self.recent_move)
+        self.grid.drawTurns(self.screen, self.turns)
         pygame.display.update()
