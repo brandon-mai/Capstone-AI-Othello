@@ -1,5 +1,6 @@
-from utility_functions import *
 import copy
+import random
+from utility_functions import *
 
 # Grid and Token classes definition
 # do not touch this file, my man
@@ -16,10 +17,12 @@ class Grid:
         self.blacktoken = loadImages('assets/BlackToken.png', size)
         self.transitionWhiteToBlack = [loadImages(f'assets/WhiteToBlack{i}.png', self.size) for i in range(1, 4)]
         self.transitionBlackToWhite = [loadImages(f'assets/BlackToWhite{i}.png', self.size) for i in range(1, 4)]
-        self.bg = self.loadBackGroundImages()
 
         self.tokens = {}
 
+        self.sprite_image = 'assets/wood.png'
+        self.tile_sprite = ('A0', 'B0')
+        self.bg = self.loadBackGroundImages()
         self.gridBg = self.createbgimg()
 
         self.gridLogic = self.regenGrid(self.y, self.x)
@@ -29,13 +32,20 @@ class Grid:
 
         self.font = pygame.font.SysFont('Arial', self.tile_size // 4, True, False)
 
-    def newGame(self):
+    def newGame(self, random_sprite):
         self.tokens.clear()
         self.gridLogic = self.regenGrid(self.y, self.x)
+        if random_sprite:
+            self.sprite_image = random.choice(('assets/wood.png', 'assets/demo_spritesheet.png'))
+            alpha = random.choice((('A', 'B'), ('F', 'G')))
+            num = random.choice(range(3))
+            self.tile_sprite = (f'{alpha[0] + str(num)}', f'{alpha[1] + str(num)}')
+            self.bg = self.loadBackGroundImages()
+            self.gridBg = self.createbgimg()
 
     def loadBackGroundImages(self):
         alpha = 'ABCDEFGHI'
-        spriteSheet = pygame.image.load('assets/wood.png').convert_alpha()
+        spriteSheet = pygame.image.load(self.sprite_image).convert_alpha()
         imageDict = {}
         for i in range(3):
             for j in range(7):
@@ -43,7 +53,7 @@ class Grid:
         return imageDict
 
     def createbgimg(self):
-        t1, t2 = 'A0', 'B0'  # tile squares
+        t1, t2 = self.tile_sprite  # tile squares
         s1, s2, s3, s4 = 'D0', 'E1', 'D2', 'C1'  # side squares, clockwise
         c1, c2, c3, c4 = 'C0', 'E0', 'E2', 'C2'  # corner squares, clockwise
         gridBg = [

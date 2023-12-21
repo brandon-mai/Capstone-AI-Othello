@@ -4,11 +4,10 @@
 
 <img src="attachments/resize_and_mode.png">
 
-You can now resize the game window and select the game mode!
-
-To resize the window, modify the value of `base_height` to something a multiple of 10.
-
-To select the game mode, modify the value of `mode` accordingly.
+Change these settings in othello.py to your liking!
+- To resize the window, modify the value of `base_height` to something a multiple of 10.
+- To select the game mode, modify the value of `mode` accordingly.
+- To get new board design every game restart, change `random_sprite` to True
 <br>
 <br>
 <br>
