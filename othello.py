@@ -42,7 +42,6 @@ class Othello:
         self.prev_states = list()
         self.gameOver = True
         self.turns = 1
-        self.rollback_turn = False
         self.forfeited_turns = 0
 
         self.grid = Grid(self.rows, self.columns, (self.tile_size, self.tile_size), self)
@@ -95,7 +94,6 @@ class Othello:
                             self.human_recent_move = prev_human_recent_move
                             self.recent_move = prev_recent_move
                             self.turns -= 2
-                            print(self.grid.gridLogic)
                             return
 
                     if self.gameOver:
