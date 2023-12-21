@@ -31,7 +31,7 @@ for easier modifications.
 <br>
 
 ## To be added in *very* near future
-- More heuristics
-- Folder for papers, game record, etc.
-- Turn counter for more advanced evaluating functions
-- Time per turn record (để đánh giá heuristics maybe)
+-[ ] More heuristics
+-[ ] Folder for papers, game record, etc.
+-[x] Turn counter for more advanced evaluating functions
+-[ ] Time per turn record (để đánh giá heuristics maybe)
