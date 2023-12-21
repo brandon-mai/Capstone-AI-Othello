@@ -8,25 +8,28 @@ from heuristics import *
 
 
 class Othello:
-    '''
-    Othello game.\n
-    mode 1: human vs. AI\n
-    mode 2: AI vs. AI\n
-    mode 3: AI vs. engine (human plays engine's moves)
-    '''
-    def __init__(self, mode: int):
+    def __init__(self):
         pygame.init()
-        self.screen = pygame.display.set_mode((1100, 800))
+
+        # THIS PLACE CAN BE MODIFIED #
+
+        base_height = 600  # window height, MUST be multiple of 10
+        mode = 2  # 1: human vs. AI | 2: AI vs. AI | 3: AI vs. engine (human replicate engine's move)
+
+        # END OF MODIFICATION #
+
+        self.tile_size = base_height // 10
+        self.screen = pygame.display.set_mode((base_height * (4/3), base_height))
         pygame.display.set_caption('Othello')
 
         self.human_player = 1 if mode == 1 else 0 if mode == 2 else -1
         self.player_AI_max = 0 if mode == 1 or mode == 3 else 1
         self.player_AI_min = -1 if mode == 1 or mode == 2 else 1
 
-        self.player1 = 1  # do not edit, black player
-        self.player2 = -1  # do not edit, white player
+        self.player1 = 1  # black player
+        self.player2 = -1  # white player
 
-        self.firstPlayer = self.player1
+        self.firstPlayer = self.player1  # black always goes first
         self.currentPlayer = self.firstPlayer
 
         self.time = 0
@@ -38,7 +41,7 @@ class Othello:
         self.gameOver = True
         self.forfeited_turns = 0
 
-        self.grid = Grid(self.rows, self.columns, (80, 80), self)
+        self.grid = Grid(self.rows, self.columns, (self.tile_size, self.tile_size), self)
         self.computerPlayer = ComputerPlayer(self.grid)
 
         self.RUN = True
@@ -50,6 +53,7 @@ class Othello:
             self.draw()
 
     def input(self):
+        tile = self.tile_size
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.RUN = False
@@ -61,7 +65,7 @@ class Othello:
                 if event.button == 1:
                     if self.currentPlayer == self.human_player and not self.gameOver:
                         x, y = pygame.mouse.get_pos()
-                        x, y = (x - 80) // 80, (y - 80) // 80
+                        x, y = (x - tile) // tile, (y - tile) // tile
                         validCells = self.grid.findAvailMoves(self.grid.gridLogic, self.currentPlayer)
                         if not validCells:
                             pass
@@ -79,7 +83,7 @@ class Othello:
 
                     if self.gameOver:
                         x, y = pygame.mouse.get_pos()
-                        if x >= 320 and x <= 480 and y >= 400 and y <= 480:
+                        if x >= tile * 4 and x <= tile * 6 and y >= tile * 5 and y <= tile * 6:
                             self.grid.newGame()
                             self.gameOver = False
                             self.currentPlayer = self.firstPlayer

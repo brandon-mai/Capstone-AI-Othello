@@ -1,5 +1,6 @@
 from utility_functions import *
 
+
 # Grid and Token classes definition
 # do not touch this file, my man
 
@@ -10,6 +11,7 @@ class Grid:
         self.y = rows
         self.x = columns
         self.size = size
+        self.tile_size = self.size[0]
         self.whitetoken = loadImages('assets/WhiteToken.png', size)
         self.blacktoken = loadImages('assets/BlackToken.png', size)
         self.transitionWhiteToBlack = [loadImages(f'assets/WhiteToBlack{i}.png', self.size) for i in range(1, 4)]
@@ -25,7 +27,7 @@ class Grid:
         self.player1Score = 0
         self.player2Score = 0
 
-        self.font = pygame.font.SysFont('Arial', 20, True, False)
+        self.font = pygame.font.SysFont('Arial', self.tile_size // 4, True, False)
 
     def newGame(self):
         self.tokens.clear()
@@ -37,7 +39,7 @@ class Grid:
         imageDict = {}
         for i in range(3):
             for j in range(7):
-                imageDict[alpha[j]+str(i)] = loadSpriteSheet(spriteSheet, j, i, (self.size), (32, 32))
+                imageDict[alpha[j] + str(i)] = loadSpriteSheet(spriteSheet, j, i, (self.size), (32, 32))
         return imageDict
 
     def createbgimg(self):
@@ -53,7 +55,7 @@ class Grid:
             ['C1', 'B0', 'A0', 'B0', 'A0', 'B0', 'A0', 'B0', 'A0', 'E1'],
             ['C2', 'D2', 'D2', 'D2', 'D2', 'D2', 'D2', 'D2', 'D2', 'E2'],
         ]
-        image = pygame.Surface((960, 960))
+        image = pygame.Surface((self.tile_size * 12, self.tile_size * 12))
         for j, row in enumerate(gridBg):
             for i, img in enumerate(row):
                 image.blit(self.bg[img], (i * self.size[0], j * self.size[1]))
@@ -87,24 +89,25 @@ class Grid:
         return textImg
 
     def endScreen(self):
+        tile = self.tile_size
         if self.GAME.gameOver:
-            endScreenImg = pygame.Surface((320, 320))
+            endScreenImg = pygame.Surface((tile * 4, tile * 4))
             message = "Black Won!!" if self.player1Score > self.player2Score \
-                      else "White Won!!" if self.player1Score < self.player2Score \
-                      else "Tie!!"
+                else "White Won!!" if self.player1Score < self.player2Score \
+                else "Tie!!"
             endText = self.font.render(message, 1, 'White')
             endScreenImg.blit(endText, (0, 0))
-            newGame = pygame.draw.rect(endScreenImg, 'White', (80, 160, 160, 80))
+            newGame = pygame.draw.rect(endScreenImg, 'White',
+                                       (tile, tile * 2, tile * 2, tile))
             newGameText = self.font.render('Play Again', 1, 'Black')
-            endScreenImg.blit(newGameText, (120, 190))
+            endScreenImg.blit(newGameText, (tile * 1.5, tile * 2.375))
         return endScreenImg
-
 
     def drawGrid(self, window):
         window.blit(self.gridBg, (0, 0))
 
-        window.blit(self.drawScore('Black', self.player1Score), (900, 100))
-        window.blit(self.drawScore('White', self.player2Score), (900, 200))
+        window.blit(self.drawScore('Black', self.player1Score), (self.tile_size * 11, self.tile_size))
+        window.blit(self.drawScore('White', self.player2Score), (self.tile_size * 11, self.tile_size * 2))
 
         for token in self.tokens.values():
             token.draw(window)
@@ -112,14 +115,20 @@ class Grid:
         availMoves = self.findAvailMoves(self.gridLogic, self.GAME.currentPlayer)
         if self.GAME.currentPlayer == self.GAME.human_player:
             for move in availMoves:
-                pygame.draw.rect(window, 'White', (80 + (move[1] * 80) + 30, 80 + (move[0] * 80) + 30, 20, 20))
+                pygame.draw.rect(window, 'White',
+                                 (self.tile_size + (move[1] * self.tile_size) + self.tile_size * (3 / 8),
+                                  self.tile_size + (move[0] * self.tile_size) + self.tile_size * (3 / 8),
+                                  self.tile_size / 4, self.tile_size / 4))
 
         if self.GAME.gameOver:
-            window.blit(self.endScreen(), (240, 240))
+            window.blit(self.endScreen(), (self.tile_size * 3, self.tile_size * 3))
 
     def markRecentMove(self, window, move):
         if move is not None:
-            pygame.draw.rect(window, 'Red', (80 + (move[1] * 80) + 30, 80 + (move[0] * 80) + 30, 20, 20))
+            pygame.draw.rect(window, 'Red',
+                             (self.tile_size + (move[1] * self.tile_size) + self.tile_size * (3 / 8),
+                              self.tile_size + (move[0] * self.tile_size) + self.tile_size * (3 / 8),
+                              self.tile_size / 4, self.tile_size / 4))
 
     def printGameLogicBoard(self):
         print('  | A | B | C | D | E | F | G | H |')
@@ -196,7 +205,7 @@ class Grid:
                 continue
             swapTiles = self.swappableTiles(x, y, grid, currentPlayer)
 
-            #if len(swapTiles) > 0 and cell not in playableCells:
+            # if len(swapTiles) > 0 and cell not in playableCells:
             if len(swapTiles) > 0:
                 playableCells.append(cell)
 
@@ -204,7 +213,7 @@ class Grid:
 
     def insertToken(self, grid, curplayer, y, x):
         tokenImage = self.blacktoken if curplayer == 1 else self.whitetoken
-        self.tokens[(y, x)] = Token(curplayer, y, x, tokenImage, self.GAME)
+        self.tokens[(y, x)] = Token(curplayer, y, x, self.tile_size, tokenImage, self.GAME)
         grid[y][x] = self.tokens[(y, x)].player
 
     def animateTransitions(self, cell, player):
@@ -213,13 +222,14 @@ class Grid:
         else:
             self.tokens[(cell[0], cell[1])].transition(self.transitionBlackToWhite, self.whitetoken)
 
+
 class Token:
-    def __init__(self, player, gridX, gridY, image, main):
+    def __init__(self, player, gridX, gridY, size, image, main):
         self.player = player
         self.gridX = gridX
         self.gridY = gridY
-        self.posX = 80 + (gridY * 80)
-        self.posY = 80 + (gridX * 80)
+        self.posX = size + (gridY * size)
+        self.posY = size + (gridX * size)
         self.GAME = main
 
         self.image = image
