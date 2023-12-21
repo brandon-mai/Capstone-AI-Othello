@@ -27,7 +27,7 @@ class ComputerPlayer:
         #    return bestMove, Score
 
         if player > 0:
-            bestScore = -64
+            bestScore = alpha
             bestMove = None
 
             for move in availMoves:
@@ -50,7 +50,7 @@ class ComputerPlayer:
             return bestMove, bestScore
 
         if player < 0:
-            bestScore = 64
+            bestScore = beta
             bestMove = None
 
             for move in availMoves:
