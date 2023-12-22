@@ -81,9 +81,13 @@ def findAvailMovesGlobal(grid, currentPlayer):
 
 
 # heuristics
-def coinParity(grid, player):
-    score = 0
+def coinParity(grid):
+    B = 0
+    W = 0
     for y, row in enumerate(grid):
         for x, col in enumerate(row):
-            score += (col * player)
-    return score
+            if col == 1:
+                B += 1
+            elif col == -1:
+                W += 1
+    return 100 * (B / (B + W)) if B > W else -100 * (W / (B + W)) if B < W else 0

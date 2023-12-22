@@ -19,7 +19,7 @@ class ComputerPlayer:
 
         #if depth == 0:
         if depth == 0 or len(availMoves) == 0:
-            bestMove, Score = None, heuristics(grid, player)
+            bestMove, Score = None, heuristics(grid)
             return bestMove, Score
 
         #if len(availMoves) == 0:

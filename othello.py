@@ -15,7 +15,7 @@ class Othello:
 
         base_height = 600  # window height, MUST be multiple of 10
         mode = 2  # 1: human vs. AI | 2: AI vs. AI | 3: AI vs. engine (human replicate engine's move)
-        self.random_sprite = False  # turn on if you want some fun
+        self.random_sprite = True  # turn on if you want some fun
 
         # END OF MODIFICATION #
 
@@ -121,8 +121,8 @@ class Othello:
                     self.currentPlayer *= -1
                 if self.currentPlayer == self.player_AI_min:
 
-                    # cell, score = self.computerPlayer.computerHard(self.grid.gridLogic, coinParity, 3, -64, 64, self.player_AI_min)
-                    cell, score = self.computerPlayer.computerRandom(self.grid.gridLogic, self.player_AI_min)
+                    cell, score = self.computerPlayer.computerHard(self.grid.gridLogic, coinParity, 3, -100, 100, self.player_AI_min)
+                    # cell, score = self.computerPlayer.computerRandom(self.grid.gridLogic, self.player_AI_min)
 
                     self.grid.insertToken(self.grid.gridLogic, self.currentPlayer, cell[0], cell[1])
                     self.recent_move = cell
@@ -146,7 +146,7 @@ class Othello:
                     self.currentPlayer *= -1
                 if self.currentPlayer == self.player_AI_max:
 
-                    # cell, score = self.computerPlayer.computerHard(self.grid.gridLogic, coinParity, 3, -64, 64, self.player_AI_max)
+                    # cell, score = self.computerPlayer.computerHard(self.grid.gridLogic, coinParity, 3, -100, 100, self.player_AI_max)
                     cell, score = self.computerPlayer.computerRandom(self.grid.gridLogic, self.player_AI_max)
 
                     self.grid.insertToken(self.grid.gridLogic, self.currentPlayer, cell[0], cell[1])
