@@ -4,7 +4,7 @@ from othello import Othello
 if __name__ == '__main__':
 
     # MODIFY THESE ONLY #
-    mode = 0
+    mode = 1
     is_recording = False
     game_file = 'game_records/Game_231223_121159.py'  # demo game record with mode = 1
     # game_file = 'game_records/Game_231223_180856.py'  # demo game record with mode = 2
