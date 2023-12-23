@@ -113,16 +113,27 @@ class Grid:
         textImg = self.font.render(f'{player} : {score}', 1, 'White')
         return textImg
 
-    def drawTurns(self, window, turns):
-        textImg = self.font.render(f'Turn : {turns}', 1, 'White')
-        window.blit(textImg, (self.tile_size * 11.2, self.tile_size * 4))
+    def drawTurns(self, window):
+        if self.GAME.mode == 0 and not self.GAME.gameOver:
+            turn_text = f'Turn : {self.GAME.turn_count} / {self.GAME.data['turn_count']}'
+        else:
+            turn_text = f'Turn : {self.GAME.turn_count}'
+        text_img = self.font.render(turn_text, 1, 'White')
+        window.blit(text_img, (self.tile_size * 11.2, self.tile_size * 4))
 
-    def drawRollbackButton(self, window, isHuman):
+    def drawRollbackButton(self, window):
         tile = self.tile_size
-        if isHuman:
+        if self.GAME.human_player and self.GAME.mode != 0:
             pygame.draw.rect(window, 'White', (tile * 10.8, tile * 8, tile * 1.6, tile))
             textImg = self.font.render('Rollback', 1, 'Black')
             window.blit(textImg, (self.tile_size * 11.18, self.tile_size * 8.34))
+
+    def drawBranchButton(self, window):
+        tile = self.tile_size
+        if self.GAME.mode == 0 and self.GAME.data['game_mode'] != 2:
+            pygame.draw.rect(window, 'White', (tile * 10.8, tile * 8, tile * 1.6, tile))
+            textImg = self.font.render('Branch', 1, 'Black')
+            window.blit(textImg, (self.tile_size * 11.25, self.tile_size * 8.34))
 
     def endScreen(self):
         tile = self.tile_size
@@ -133,6 +144,9 @@ class Grid:
                 else "Tie!!"
             endText = self.font.render(message, 1, 'White')
             endScreenImg.blit(endText, (tile / 2, tile / 2))
+            if self.GAME.is_recording and self.GAME.turn_count > 1:
+                recordText = self.font.render('Game saved to game_records/', 1, 'White')
+                endScreenImg.blit(recordText, (tile / 2, tile))
             newGame = pygame.draw.rect(endScreenImg, 'White',
                                        (tile, tile * 2, tile * 2, tile))
             newGameText = self.font.render('Play Again', 1, 'Black')
@@ -142,6 +156,10 @@ class Grid:
     def drawGrid(self, window):
         tile = self.tile_size
         window.blit(self.gridBg, (0, 0))
+
+        if self.GAME.is_recording:
+            textImg = self.font.render('Recording', 1, 'Red')
+            window.blit(textImg, (tile * 0.2, tile * 0.2))
 
         window.blit(self.drawScore('Black', self.player1Score), (tile * 11.2, tile))
         window.blit(self.drawScore('White', self.player2Score), (tile * 11.2, tile * 2))
@@ -159,12 +177,23 @@ class Grid:
         if self.GAME.gameOver:
             window.blit(self.endScreen(), (tile * 3, tile * 3))
 
-    def markRecentMove(self, window, move):
+    def markRecentMove(self, window):
+        tile = self.tile_size
+        move = self.GAME.recent_move
         if move is not None:
             pygame.draw.rect(window, 'Red',
-                             (self.tile_size + (move[1] * self.tile_size) + self.tile_size * (3 / 8),
-                              self.tile_size + (move[0] * self.tile_size) + self.tile_size * (3 / 8),
-                              self.tile_size / 4, self.tile_size / 4))
+                             (tile + (move[1] * tile) + tile * 0.375, tile + (move[0] * tile) + tile * 0.375,
+                              tile * 0.25, tile * 0.25))
+
+    def markNextMove(self, window):
+        tile = self.tile_size
+        if self.GAME.mode == 0 and not self.GAME.gameOver:
+            turn = self.GAME.turn_count
+            if turn < self.GAME.data['turn_count']:
+                move = self.GAME.data[f'recent_move{turn + 1}']
+                pygame.draw.rect(window, 'Green',
+                                 (tile + (move[1] * tile) + tile * 0.425, tile + (move[0] * tile) + tile * 0.425,
+                                  tile * 0.15, tile * 0.15))
 
     def printGameLogicBoard(self):
         print('  | A | B | C | D | E | F | G | H |')
@@ -199,7 +228,7 @@ class Grid:
 
     def swappableTiles(self, x, y, grid, player):
         surroundCells = directions(x, y)
-        if len(surroundCells) == 0:
+        if len(surroundCells) == 0 or player is None:
             return []
 
         swappableTiles = []
