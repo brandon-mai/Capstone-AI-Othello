@@ -3,14 +3,19 @@ from othello import Othello
 
 if __name__ == '__main__':
 
-    # MODIFIABLE #
+    # MODIFY THESE ONLY #
     mode = 0
-    is_recording = True
-    game_file = 'game_records/Game_231223_121159.py'  # demo game mode = 1
-    # game_file = 'game_records/Game_231223_121911.py'  # demo game mode = 2
-    # game_file = 'game_records/Game_231223_123357.py'  # demo game mode = 3
-    ##############
+    is_recording = False
+    game_file = 'game_records/Game_231223_121159.py'  # demo game record with mode = 1
+    # game_file = 'game_records/Game_231223_180856.py'  # demo game record with mode = 2
+    # game_file = 'game_records/Game_231223_181031.py'  # demo game record with mode = 3
+    # MODIFY THESE ONLY #
 
-    game = Othello(mode, is_recording, game_file)
-    game.run()
+    while True:
+        game = Othello(mode, is_recording, game_file)
+        next_mode, game_file = game.run()
+        if next_mode == 0:
+            break
+        mode = next_mode
+
     pygame.quit()

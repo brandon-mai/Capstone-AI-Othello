@@ -6,59 +6,109 @@ from grid import Grid
 from computer import ComputerPlayer
 from heuristics import *
 
+
 # Othello: main game object, responsible for assigning turns and updating board
 
 
 class Othello:
-    def __init__(self, mode: int = 0, is_recording: bool = False, game_file: str = None):
+    def __init__(self, mode: int = 0, is_recording: bool = False, imported_file_path: str = None):
         """
         :param mode: 0: replay | 1: human vs. AI | 2: AI vs. AI | 3: AI vs. engine
         :param is_recording: whether the current game is being recorded
-        :param game_file: relative path to game record (for mode = 0 only)
+        :param imported_file_path: relative path to game record for replay
         """
         pygame.init()
         self.mode = mode
         self.is_recording = is_recording
-        self.game_file = game_file
+        self.is_appending = False
+        self.imported_f_path = imported_file_path
 
         # ADVANCED SETTINGS #
         base_height = 600  # window height, MUST be multiple of 10
         self.random_sprite = False  # turn on if you want some fun
         #####################
 
+        # METRICS/CONDITIONS #
+        self.time = 0
+        self.turn_count = 0 if self.mode == 0 else 1
+        self.gameOver = True
+        self.forfeited_turns = 0
+        self.player1 = 1  # black player
+        self.player2 = -1  # white player
+        self.currentPlayer = self.player1  # black always goes first
+        ######################
+
+        # CORE OBJECTS INITIALIZATION #
+        self.tile_size = base_height // 10
+        self.screen = pygame.display.set_mode((base_height * (4 / 3), base_height))
+        self.grid = Grid(8, 8, (self.tile_size, self.tile_size), self)
+        self.computerPlayer = ComputerPlayer(self.grid)
+        ###############################
+
+        # ROLLBACK #
+        self.states = list()
+        self.recent_move = None
+        ############
+
         # GAME REPLAYING #
-        if self.mode == 0:
-            pkg, f = self.game_file.split('/')
-            mod = importlib.import_module(f'.{f[:-3:]}', package=pkg)
+        if self.mode <= 0:
+            pkg, self.imported_f_name = self.imported_f_path.split('/')
+            mod = importlib.import_module(f'.{self.imported_f_name[:-3:]}', package=pkg)
             self.data = mod.data
             self.is_recording = False
+            self.is_appending = False
         ##################
 
         # GAME RECORDING #
         if self.mode and self.is_recording:
             t = time.localtime()
-            self.file_name = (f'game_records/Game_{t.tm_mday:0>2d}{t.tm_mon:0>2d}{str(t.tm_year % 100).zfill(2)}'
-                              f'_{t.tm_hour:0>2d}{t.tm_min:0>2d}{t.tm_sec:0>2d}.py')
-            self.recorded = False
+            self.exported_f_path = (f'game_records/Game_{t.tm_mday:0>2d}{t.tm_mon:0>2d}{str(t.tm_year % 100).zfill(2)}'
+                                    f'_{t.tm_hour:0>2d}{t.tm_min:0>2d}{t.tm_sec:0>2d}.py')
+            self.is_written = False
         ##################
 
-        # UI SCALING #
-        self.tile_size = base_height // 10
-        self.screen = pygame.display.set_mode((base_height * (4/3), base_height))
+        # GAME RECONSTRUCTING #
+        if self.mode < 0:
+            true_turn = self.data['turn_count']
+            self.gameOver = False
+            for turn in range(true_turn):
+                board = self.data[f'board{turn}']
+                if turn == 0:
+                    recent_move = None
+                elif turn == 1:
+                    recent_move = (self.data[f'recent_move{turn}'][0], self.data[f'recent_move{turn}'][1],
+                                   self.data[f'recent_move{turn}'][2] * -1)
+                else:
+                    recent_move = (self.data[f'recent_move{turn}'][0], self.data[f'recent_move{turn}'][1],
+                                   self.data[f'recent_move{turn - 1}'][2])
+                self.states.append((board, recent_move))
+            self.grid.recoverGrid(self.data[f'board{true_turn}'])
+            self.recent_move = (self.data[f'recent_move{true_turn}'][0], self.data[f'recent_move{true_turn}'][1],
+                                self.data[f'recent_move{true_turn - 1}'][2])
+            self.turn_count = true_turn + 1
+            self.exported_f_path = self.imported_f_path
+            self.mode = -self.mode
+            self.is_appending = True
+            self.is_written = False
+        #######################
+
+        # WINDOW CAPTION #
         caption = (f'Othello'
-                   f'{f' - Replaying /{self.game_file}' if self.mode == 0 else ' - Human vs. AI' if self.mode == 1 else ''}'
-                   f'{' - AI vs. AI' if self.mode == 2 else ' - AI vs. Human' if self.mode == 3 else ''}'
-                   f'{f' - Recording to /{self.file_name}' if self.is_recording else ''}'
+                   f'{f' - Replaying /{self.imported_f_path}' if self.mode == 0 else ''}'
+                   f'{f' - Recording to /{self.exported_f_path}' if self.is_recording else ''}'
+                   f'{f' - Appending to /{self.exported_f_path}' if self.is_appending else ''}'
+                   f'{f' - Human vs. AI' if abs(self.mode) == 1 else ' - AI vs. Human' if abs(self.mode) == 3 else ''}'
+                   f'{' - AI vs. AI' if self.mode == 2 else ''}'
                    f'{' - I\'m feeling lucky' if self.random_sprite else ''}')
         pygame.display.set_caption(caption)
-        ##############
+        ##################
 
         # GAME RULE #
-        if self.mode == 1 or self.mode == -1:
+        if self.mode == 1:
             self.human_player, self.AI_black, self.AI_white = (1, 0, -1)
         elif self.mode == 2:
             self.human_player, self.AI_black, self.AI_white = (0, 1, -1)
-        elif self.mode == 3 or self.mode == -3:
+        elif self.mode == 3:
             self.human_player, self.AI_black, self.AI_white = (-1, 0, 1)
         elif self.mode == 0:
             if self.data['game_mode'] == 1:
@@ -67,35 +117,18 @@ class Othello:
                 self.human_player, self.AI_black, self.AI_white = (0, 0, 0)
             elif self.data['game_mode'] == 3:
                 self.human_player, self.AI_black, self.AI_white = (-1, 0, 0)
-        self.player1 = 1  # black player
-        self.player2 = -1  # white player
-        self.currentPlayer = self.player1  # black always goes first
         #############
 
-        # METRICS/CONDITIONS #
-        self.time = 0
-        self.turn_count = 0 if self.mode == 0 else 1
-        self.gameOver = True
-        self.forfeited_turns = 0
-        ######################
-
-        # ROLLBACK #
-        self.recent_move = None
-        self.states = list()
-        ##################
-
-        # GAME OBJECTS INITIALIZATION #
-        self.grid = Grid(8, 8, (self.tile_size, self.tile_size), self)
-        self.computerPlayer = ComputerPlayer(self.grid)
-        ###############################
-
         self.RUN = True
+        self.NEXT_MODE = 0
+        self.APPEND_FILE_PATH = None
 
     def run(self):
         while self.RUN == True:
             self.input()
             self.update()
             self.draw()
+        return self.NEXT_MODE, self.APPEND_FILE_PATH
 
     def input(self):
         tile = self.tile_size
@@ -111,6 +144,9 @@ class Othello:
                     if self.gameOver:
                         x, y = pygame.mouse.get_pos()
                         if x >= tile * 4 and x <= tile * 6 and y >= tile * 5 and y <= tile * 6:
+                            if self.is_appending:
+                                self.NEXT_MODE = self.mode
+                                self.RUN = False
                             self.grid.newGame(self.random_sprite)
                             self.gameOver = False
                             self.currentPlayer = self.player1
@@ -121,6 +157,7 @@ class Othello:
             # Human player move/rollback
             if event.type == pygame.MOUSEBUTTONDOWN and self.mode != 0:
                 if event.button == 1:
+                    # Move
                     if self.currentPlayer == self.human_player and not self.gameOver:
                         x, y = pygame.mouse.get_pos()
                         x, y = (x - tile) // tile, (y - tile) // tile
@@ -140,14 +177,16 @@ class Othello:
                                 self.currentPlayer *= -1
                                 self.forfeited_turns = 0
                                 self.time = pygame.time.get_ticks()
+                    # Rollback
                     if self.currentPlayer == self.human_player and not self.gameOver and self.turn_count >= 3:
                         x, y = pygame.mouse.get_pos()
                         if x >= tile * 10.8 and x <= tile * 12.4 and y >= tile * 8 and y <= tile * 9:
-                            self.states.pop()
+                            if self.states.pop():
+                                self.turn_count -= 1
                             prev_board, prev_recent_move = self.states.pop()
                             self.grid.recoverGrid(prev_board)
                             self.recent_move = prev_recent_move
-                            self.turn_count -= 2
+                            self.turn_count -= 1
                             return
 
             # Replay control
@@ -178,12 +217,25 @@ class Othello:
                             self.currentPlayer = self.data[f'recent_move{self.turn_count}'][2]
                 # Branch into new game record
                 if event.type == pygame.MOUSEBUTTONDOWN and not self.gameOver:
-                    if event.button == 1\
-                            and ((self.data['game_mode'] == 1 and self.turn_count % 2 == 0)
-                                 or (self.data['game_mode'] == 3 and self.turn_count % 2 != 0)):
+                    if event.button == 1 and self.mode == 0 and self.currentPlayer == self.human_player:
                         x, y = pygame.mouse.get_pos()
                         if x >= tile * 10.8 and x <= tile * 12.4 and y >= tile * 8 and y <= tile * 9:
-                            print('let\'s go baby that\'s what i was looking for')
+                            self.NEXT_MODE = -self.data['game_mode']
+                            t = time.localtime()
+                            self.APPEND_FILE_PATH = (f'game_records/{self.imported_f_name[:-3:]}'
+                                                     f'_{t.tm_mday:0>2d}{t.tm_mon:0>2d}{str(t.tm_year % 100).zfill(2)}'
+                                                     f'_{t.tm_hour:0>2d}{t.tm_min:0>2d}{t.tm_sec:0>2d}'
+                                                     f'_b{self.turn_count}.py')
+                            f = open(self.APPEND_FILE_PATH, 'w')
+                            f.write('data = {\n')
+                            f.write(f'\t"game_mode": {self.data['game_mode']},\n')
+                            f.write(f'\t"turn_count": {self.turn_count},\n')
+                            for turn in range(self.turn_count + 1):
+                                f.write(f'\t"board{turn}": {str(self.data[f'board{turn}'])},\n')
+                                f.write(f'\t"recent_move{turn}": {str(self.data[f'recent_move{turn}'])},\n')
+                            f.write('}')
+                            f.close()
+                            self.RUN = False
 
     def update(self):
         # AI_white's turn
@@ -196,10 +248,12 @@ class Othello:
                         self.states.append((copy.deepcopy(self.grid.gridLogic), self.recent_move))
                         self.gameOver = True
                         return
+                    self.states.append(None)
                     self.currentPlayer *= -1
                 if self.currentPlayer == self.AI_white:
 
-                    cell, score = self.computerPlayer.computerHard(self.grid.gridLogic, coinParity, 3, -100, 100, self.AI_white)
+                    cell, score = self.computerPlayer.computerHard(self.grid.gridLogic, coinParity, 3, -100, 100,
+                                                                   self.AI_white)
                     # cell, score = self.computerPlayer.computerRandom(self.grid.gridLogic, self.player_AI_min)
 
                     self.states.append((copy.deepcopy(self.grid.gridLogic), self.recent_move))
@@ -223,6 +277,7 @@ class Othello:
                         self.states.append((copy.deepcopy(self.grid.gridLogic), self.recent_move))
                         self.gameOver = True
                         return
+                    self.states.append(None)
                     self.currentPlayer *= -1
                 if self.currentPlayer == self.AI_black:
 
@@ -251,24 +306,26 @@ class Othello:
                     self.states.append((copy.deepcopy(self.grid.gridLogic), self.recent_move))
                     self.gameOver = True
                     return
+                self.states.append(None)
                 self.currentPlayer *= -1
 
-        if self.mode and self.is_recording:
-            if self.gameOver and self.turn_count > 1 and not self.recorded:
-                f = open(self.file_name, 'w')
+        if self.is_recording or self.is_appending:
+            if self.gameOver and self.turn_count > 1 and not self.is_written:
+                self.states = list(filter(lambda s: s is not None, self.states))
+                f = open(self.exported_f_path, 'w')
                 f.write('data = {\n')
                 f.write(f'\t"game_mode": {self.mode},\n')
                 f.write(f'\t"turn_count": {self.turn_count - 1},\n')
                 for turn in range(self.turn_count):
                     board, recent_move = self.states[turn]
-                    next_recent_move = self.states[turn + 1][1] if turn < self.turn_count - 1 else (0, 0, None)
+                    next_mover = self.states[turn + 1][1][2] if turn < self.turn_count - 1 else None
                     f.write(f'\t"board{turn}": {str(board)},\n')
                     if recent_move is None:
                         f.write(f'\t"recent_move{turn}": {str(recent_move)},\n')
                         continue
-                    f.write(f'\t"recent_move{turn}": ({recent_move[0]}, {recent_move[1]}, {next_recent_move[2]}),\n')
+                    f.write(f'\t"recent_move{turn}": ({recent_move[0]}, {recent_move[1]}, {next_mover}),\n')
                 f.write('}')
-                self.recorded = True
+                self.is_written = True
                 f.close()
 
     def draw(self):

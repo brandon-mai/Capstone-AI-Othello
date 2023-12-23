@@ -144,7 +144,7 @@ class Grid:
                 else "Tie!!"
             endText = self.font.render(message, 1, 'White')
             endScreenImg.blit(endText, (tile / 2, tile / 2))
-            if self.GAME.is_recording and self.GAME.turn_count > 1:
+            if (self.GAME.is_recording or self.GAME.is_appending) and self.GAME.turn_count > 1:
                 recordText = self.font.render('Game saved to game_records/', 1, 'White')
                 endScreenImg.blit(recordText, (tile / 2, tile))
             newGame = pygame.draw.rect(endScreenImg, 'White',
