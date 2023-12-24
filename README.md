@@ -1,5 +1,23 @@
 # Pygame Othello for Capstone Project
-Or Pythello, because... y'know, Python and Othello... ahahaha, yeah I'll see myself out.
+Or Pygello, because... y'know, Pygame and Othello... ahahaha, yeah I'll see myself out.
+
+## What is this?
+A Pygame implementation of the game Othello. We made this and add several
+features to support researching purposes.
+
+Aside from playing Othello, this program is also capable of recording and
+replaying games.
+<br>
+<br>
+
+## Getting started
+'How can I use this', you ask. Here are a few simple things you need to do:
+- Fork, download, or do whatever to get this repo on your local machine.
+- Have `pygame` module installed on your machine.
+- Adjust parameters in certain files to your liking.
+- Run `main.py`.
+<br>
+<br>
 
 ## Basic adjustments
 Head to `main.py`
@@ -58,9 +76,9 @@ you are doing, but please don't :)
 <br>
 <br>
 
-## To do list
+## To be added *very* soon
 - [ ] More heuristics
 - [ ] Improve game record/rollback method
 - [ ] Folder for papers, etc.
-- [x] Turn counter for more advanced evaluating functions
 - [ ] Time per turn record (để đánh giá heuristics maybe)
+- [ ] Auto recording moves of external engines with mss and opencv

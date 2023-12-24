@@ -12,7 +12,7 @@ if __name__ == '__main__':
     # MODIFY THESE ONLY #
 
     while True:
-        game = Othello(mode, is_recording, game_file)
+        game = Othello(mode=mode, is_recording=is_recording, imported_file_path=game_file)
         next_mode, game_file = game.run()
         if next_mode == 0:
             break
