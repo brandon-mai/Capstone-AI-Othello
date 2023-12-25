@@ -109,7 +109,7 @@ class Othello:
         elif self.mode == 2:
             self.human_player, self.AI_black, self.AI_white = (0, 1, -1)
         elif self.mode == 3:
-            self.human_player, self.AI_black, self.AI_white = (-1, 0, 1)
+            self.human_player, self.AI_black, self.AI_white = (-1, 1, 0)
         elif self.mode == 0:
             if self.data['game_mode'] == 1:
                 self.human_player, self.AI_black, self.AI_white = (1, 0, 0)
@@ -237,24 +237,31 @@ class Othello:
                             f.close()
                             self.RUN = False
 
+    def check_forfeit(self):
+        if not self.grid.findAvailMoves(self.grid.gridLogic, self.currentPlayer):
+            self.forfeited_turns += 1
+            if self.forfeited_turns == 2:
+                self.states.append((copy.deepcopy(self.grid.gridLogic), self.recent_move))
+                self.gameOver = True
+                return True
+            self.states.append(None)
+            self.currentPlayer *= -1
+        return False
+
     def update(self):
         # AI_white's turn
         if self.currentPlayer == self.AI_white and not self.gameOver:
             new_time = pygame.time.get_ticks()
             if new_time - self.time >= 100:
-                if not self.grid.findAvailMoves(self.grid.gridLogic, self.currentPlayer):
-                    self.forfeited_turns += 1
-                    if self.forfeited_turns == 2:
-                        self.states.append((copy.deepcopy(self.grid.gridLogic), self.recent_move))
-                        self.gameOver = True
-                        return
-                    self.states.append(None)
-                    self.currentPlayer *= -1
+
+                if self.check_forfeit():
+                    return
+
                 if self.currentPlayer == self.AI_white:
 
-                    cell, score = self.computerPlayer.computerHard(self.grid.gridLogic, coinParity, 3, -100, 100,
-                                                                   self.AI_white)
-                    # cell, score = self.computerPlayer.computerRandom(self.grid.gridLogic, self.player_AI_min)
+                    cell, score = self.computerPlayer.computerMABP(self.grid.gridLogic, coinParity, 3, -100, 100,
+                                                                   self.currentPlayer)
+                    # cell, score = self.computerPlayer.computerRandom(self.grid.gridLogic, self.AI_white)
 
                     self.states.append((copy.deepcopy(self.grid.gridLogic), self.recent_move))
                     self.recent_move = (cell[0], cell[1], self.currentPlayer)
@@ -271,17 +278,14 @@ class Othello:
         if self.currentPlayer == self.AI_black and not self.gameOver:
             new_time = pygame.time.get_ticks()
             if new_time - self.time >= 100:
-                if not self.grid.findAvailMoves(self.grid.gridLogic, self.currentPlayer):
-                    self.forfeited_turns += 1
-                    if self.forfeited_turns == 2:
-                        self.states.append((copy.deepcopy(self.grid.gridLogic), self.recent_move))
-                        self.gameOver = True
-                        return
-                    self.states.append(None)
-                    self.currentPlayer *= -1
+
+                if self.check_forfeit():
+                    return
+
                 if self.currentPlayer == self.AI_black:
 
-                    # cell, score = self.computerPlayer.computerHard(self.grid.gridLogic, coinParity, 3, -100, 100, self.player_AI_max)
+                    # cell, score = self.computerPlayer.computerMABP(self.grid.gridLogic, coinParity, 3, -100, 100,
+                    #                                                self.currentPlayer)
                     cell, score = self.computerPlayer.computerRandom(self.grid.gridLogic, self.AI_black)
 
                     self.states.append((copy.deepcopy(self.grid.gridLogic), self.recent_move))
@@ -300,14 +304,8 @@ class Othello:
 
         # human_player's turn
         if self.currentPlayer == self.human_player and not self.gameOver:
-            if not self.grid.findAvailMoves(self.grid.gridLogic, self.currentPlayer):
-                self.forfeited_turns += 1
-                if self.forfeited_turns == 2:
-                    self.states.append((copy.deepcopy(self.grid.gridLogic), self.recent_move))
-                    self.gameOver = True
-                    return
-                self.states.append(None)
-                self.currentPlayer *= -1
+            if self.check_forfeit():
+                return
 
         if self.is_recording or self.is_appending:
             if self.gameOver and self.turn_count > 1 and not self.is_written:
