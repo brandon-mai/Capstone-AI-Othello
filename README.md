@@ -2,7 +2,7 @@
 Or Pygello, because... y'know, Pygame and Othello... ahahaha, yeah I'll see myself out.
 
 ## What is this?
-A Pygame implementation of the game Othello. We made this and add several
+A Pygame implementation of the game Othello. We made this and added several
 features to support researching purposes.
 
 Aside from playing Othello, this program is also capable of recording and
@@ -13,7 +13,8 @@ replaying games.
 ## Getting started
 'How can I use this', you ask. Here are a few simple things you need to do:
 - Fork, download, or do whatever to get this repo on your local machine.
-- Have `pygame` module installed on your machine.
+- Have Python 3.12 installed (or updated).
+- Have `pygame` module installed.
 - Adjust parameters in certain files to your liking.
 - Run `main.py`.
 <br>
