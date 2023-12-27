@@ -30,7 +30,7 @@ class Grid:
         self.player1Score = 0
         self.player2Score = 0
 
-        self.font = pygame.font.SysFont('Arial', self.tile_size // 4, True, False)
+        self.font = pygame.font.SysFont('Arial', int(self.tile_size // 4), True, False)
 
     def newGame(self, random_sprite):
         self.tokens.clear()
@@ -135,23 +135,45 @@ class Grid:
             textImg = self.font.render('Branch', 1, 'Black')
             window.blit(textImg, (self.tile_size * 11.25, self.tile_size * 8.34))
 
-    def endScreen(self):
+    def pop_up(self):
         tile = self.tile_size
         if self.GAME.gameOver:
-            endScreenImg = pygame.Surface((tile * 4, tile * 4))
+            panel = pygame.Surface((tile * 4, tile * 5))
             message = "Black Won!!" if self.player1Score > self.player2Score \
                 else "White Won!!" if self.player1Score < self.player2Score \
                 else "Tie!!"
-            endText = self.font.render(message, 1, 'White')
-            endScreenImg.blit(endText, (tile / 2, tile / 2))
+            end_text = self.font.render(message, 1, 'White')
+            panel.blit(end_text, (tile / 2, tile / 2))
+
             if (self.GAME.is_recording or self.GAME.is_appending) and self.GAME.turn_count > 1:
-                recordText = self.font.render('Game saved to game_records/', 1, 'White')
-                endScreenImg.blit(recordText, (tile / 2, tile))
-            newGame = pygame.draw.rect(endScreenImg, 'White',
-                                       (tile, tile * 2, tile * 2, tile))
-            newGameText = self.font.render('Play Again', 1, 'Black')
-            endScreenImg.blit(newGameText, (tile * 1.5, tile * 2.375))
-        return endScreenImg
+                record_text = self.font.render('Game saved to game_records/', 1, 'White')
+                panel.blit(record_text, (tile / 2, tile))
+
+            game_text = self.font.render('Play Again', 1, 'Black')
+            pygame.draw.rect(panel, 'White', (tile, tile * 2, tile * 2, tile))
+            panel.blit(game_text, (tile * 1.5, tile * 2.375))
+
+            pygame.draw.rect(panel, 'White', (tile, tile * 3.5, tile * 2, tile))
+            settings_text = self.font.render('Settings', 1, 'Black')
+            panel.blit(settings_text, (tile * 1.6, tile * 3.875))
+
+            return panel
+
+        if self.GAME.paused:
+            panel = pygame.Surface((tile * 4, tile * 5))
+            record_text = self.font.render('Game paused...', 1, 'White')
+            panel.blit(record_text, (tile / 2, tile / 2))
+
+            game_text = self.font.render('Continue', 1, 'Black')
+
+            pygame.draw.rect(panel, 'White', (tile, tile * 2, tile * 2, tile))
+            panel.blit(game_text, (tile * 1.5, tile * 2.375))
+
+            pygame.draw.rect(panel, 'White', (tile, tile * 3.5, tile * 2, tile))
+            settings_text = self.font.render('Settings', 1, 'Black')
+            panel.blit(settings_text, (tile * 1.6, tile * 3.875))
+
+            return panel
 
     def drawGrid(self, window):
         tile = self.tile_size
@@ -174,8 +196,8 @@ class Grid:
                                  (tile + (move[1] * tile) + tile * (3 / 8), tile + (move[0] * tile) + tile * (3 / 8),
                                   tile / 4, tile / 4))
 
-        if self.GAME.gameOver:
-            window.blit(self.endScreen(), (tile * 3, tile * 3))
+        if self.GAME.gameOver or self.GAME.paused:
+            window.blit(self.pop_up(), (tile * 3, tile * 2.5))
 
     def markRecentMove(self, window):
         tile = self.tile_size
@@ -191,6 +213,10 @@ class Grid:
             turn = self.GAME.turn_count
             if turn < self.GAME.data['turn_count']:
                 move = self.GAME.data[f'recent_move{turn + 1}']
+                # move_maker = self.GAME.data[f'recent_move{turn}'][2]
+                # token_image = self.blacktoken.convert_alpha() if move[2] == 1 else self.whitetoken.convert_alpha()
+                # token_image.set_alpha(144)
+                # window.blit(token_image, (tile + move[1] * tile, tile + move[0] * tile))
                 pygame.draw.rect(window, 'Green',
                                  (tile + (move[1] * tile) + tile * 0.425, tile + (move[0] * tile) + tile * 0.425,
                                   tile * 0.15, tile * 0.15))
