@@ -246,27 +246,27 @@ class Othello:
                             self.currentPlayer = self.player1
                         else:
                             self.currentPlayer = self.data[f'recent_move{self.turn_count}'][2]
-                # Branch into new game record
+                # Branch into new game record (UNDER CONSTRUCTION)
                 if event.type == pygame.MOUSEBUTTONDOWN and not self.gameOver:
                     if event.button == 1 and self.mode == 0 and self.currentPlayer == self.human_player:
                         x, y = pygame.mouse.get_pos()
-                        # if x >= tile * 10.8 and x <= tile * 12.4 and y >= tile * 8 and y <= tile * 9:
-                        #     self.NEXT_MODE = -self.data['game_mode']
-                        #     t = time.localtime()
-                        #     self.APPEND_FILE_PATH = (f'game_records/{self.imported_f_name[:-3:]}'
-                        #                              f'_{t.tm_mday:0>2d}{t.tm_mon:0>2d}{str(t.tm_year % 100).zfill(2)}'
-                        #                              f'_{t.tm_hour:0>2d}{t.tm_min:0>2d}{t.tm_sec:0>2d}'
-                        #                              f'_b{self.turn_count}.py')
-                        #     f = open(self.APPEND_FILE_PATH, 'w')
-                        #     f.write('data = {\n')
-                        #     f.write(f'\t"game_mode": {self.data['game_mode']},\n')
-                        #     f.write(f'\t"turn_count": {self.turn_count},\n')
-                        #     for turn in range(self.turn_count + 1):
-                        #         f.write(f'\t"board{turn}": {str(self.data[f'board{turn}'])},\n')
-                        #         f.write(f'\t"recent_move{turn}": {str(self.data[f'recent_move{turn}'])},\n')
-                        #     f.write('}')
-                        #     f.close()
-                        #     self.RUN = False
+                        if x >= tile * 10.8 and x <= tile * 12.4 and y >= tile * 8 and y <= tile * 9:
+                            self.NEXT_MODE = -self.data['game_mode']
+                            t = time.localtime()
+                            self.APPEND_FILE_PATH = (f'game_records/{self.imported_f_name[:-3:]}'
+                                                     f'_{t.tm_mday:0>2d}{t.tm_mon:0>2d}{str(t.tm_year % 100).zfill(2)}'
+                                                     f'_{t.tm_hour:0>2d}{t.tm_min:0>2d}{t.tm_sec:0>2d}'
+                                                     f'_b{self.turn_count}.py')
+                            f = open(self.APPEND_FILE_PATH, 'w')
+                            f.write('data = {\n')
+                            f.write(f'\t"game_mode": {self.data['game_mode']},\n')
+                            f.write(f'\t"turn_count": {self.turn_count},\n')
+                            for turn in range(self.turn_count + 1):
+                                f.write(f'\t"board{turn}": {str(self.data[f'board{turn}'])},\n')
+                                f.write(f'\t"recent_move{turn}": {str(self.data[f'recent_move{turn}'])},\n')
+                            f.write('}')
+                            f.close()
+                            self.RUN = False
 
     def update(self):
         # AI_white's turn
@@ -364,15 +364,15 @@ class Othello:
                 f.write(f'\t"game_mode": {self.mode},\n')
                 f.write(f'\t"turn_count": {self.turn_count - 1},\n')
 
-                # # Old move recording method
-                # for turn in range(self.turn_count):
-                #     board, recent_move = self.states[turn]
-                #     next_mover = self.states[turn + 1][1][2] if turn < self.turn_count - 1 else None
-                #     f.write(f'\t"board{turn}": {str(board)},\n')
-                #     if recent_move is None:
-                #         f.write(f'\t"recent_move{turn}": {str(recent_move)},\n')
-                #         continue
-                #     f.write(f'\t"recent_move{turn}": ({recent_move[0]}, {recent_move[1]}, {next_mover}),\n')
+                # Old move recording method
+                for turn in range(self.turn_count):
+                    board, recent_move = self.states[turn]
+                    next_mover = self.states[turn + 1][1][2] if turn < self.turn_count - 1 else None
+                    f.write(f'\t"board{turn}": {str(board)},\n')
+                    if recent_move is None:
+                        f.write(f'\t"recent_move{turn}": {str(recent_move)},\n')
+                        continue
+                    f.write(f'\t"recent_move{turn}": ({recent_move[0]}, {recent_move[1]}, {next_mover}),\n')
 
                 # New move sequence recording method
                 col_sequence = 'abcdefgh'
@@ -382,7 +382,7 @@ class Othello:
                     move = f'{col_sequence[x]}{y + 1}'
                     move_sequence.append(move)
                 move_sequence = ' '.join(move_sequence)
-                f.write(f'\t"move_sequence": "{move_sequence}"\n')
+                # f.write(f'\t"move_sequence": "{move_sequence}"\n')
 
                 # Writing to additional compatible text file
                 f_txt = open(self.compatible_f_path, 'w')
