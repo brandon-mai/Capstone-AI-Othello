@@ -160,4 +160,4 @@ def iago_bootleg(grid, turn_count):
     ESAC = 312 + 6.24 * turn_count
     CMAC = 50 + 2 * turn_count if turn_count <= 25 else 75 + turn_count
 
-    return (ESAC * edge_stability + 36 * internal_stability + CMAC * current_mobility + 99 * potential_mobility) / 100
+    return (ESAC * edge_stability + 36 * internal_stability + CMAC * current_mobility + 99 * potential_mobility) / 10
