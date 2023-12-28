@@ -129,7 +129,7 @@ class Othello:
 
         self.paused = False
         self.RUN = True
-        self.RESELECT = False
+        self.RESELECT = 0
         self.NEXT_MODE = 0
         self.APPEND_FILE_PATH = None
 
@@ -156,7 +156,7 @@ class Othello:
                         # Play Again
                         if x >= tile * 4 and x <= tile * 6 and y >= tile * 4.5 and y <= tile * 5.5:
                             if self.is_appending:
-                                self.RESELECT = True
+                                self.RESELECT = 1
                                 self.NEXT_MODE = self.mode
                                 self.RUN = False
                             self.grid.newGame(self.random_sprite)
@@ -167,7 +167,7 @@ class Othello:
                             self.turn_count = 0 if self.mode == 0 else 1
                         # To Settings
                         if x >= tile * 4 and x <= tile * 6 and y >= tile * 6 and y <= tile * 7:
-                            self.RESELECT = True
+                            self.RESELECT = 1
                             self.NEXT_MODE = self.mode
                             self.RUN = False
                     if self.paused:
@@ -176,8 +176,12 @@ class Othello:
                             self.paused = False
                         # To Settings
                         if x >= tile * 4 and x <= tile * 6 and y >= tile * 6 and y <= tile * 7:
-                            self.RESELECT = True
-                            self.NEXT_MODE = self.mode
+                            if self.mode == 0:
+                                self.RESELECT = 2
+                                self.NEXT_MODE = 69
+                            else:
+                                self.RESELECT = 1
+                                self.NEXT_MODE = self.mode
                             self.RUN = False
 
             if event.type == pygame.KEYDOWN:
@@ -223,7 +227,7 @@ class Othello:
             # Replay control # UNDER CONSTRUCTION
             if self.mode == 0:
                 # Replay roll backward/forward
-                if event.type == pygame.KEYDOWN and not self.gameOver:
+                if event.type == pygame.KEYDOWN and not self.gameOver and not self.paused:
                     if event.key == pygame.K_LEFT:
                         if self.turn_count > 0:
                             self.turn_count -= 1
@@ -247,7 +251,7 @@ class Othello:
                         else:
                             self.currentPlayer = self.data[f'recent_move{self.turn_count}'][2]
                 # Branch into new game record (UNDER CONSTRUCTION)
-                if event.type == pygame.MOUSEBUTTONDOWN and not self.gameOver:
+                if event.type == pygame.MOUSEBUTTONDOWN and not self.gameOver and not self.paused:
                     if event.button == 1 and self.mode == 0 and self.currentPlayer == self.human_player:
                         x, y = pygame.mouse.get_pos()
                         if x >= tile * 10.8 and x <= tile * 12.4 and y >= tile * 8 and y <= tile * 9:
@@ -328,7 +332,8 @@ class Othello:
                 return self.computerPlayer.computerRandom(self.grid.gridLogic, self.AI_black)
             else:
                 depth = self.AI_black_data[1]
-                return self.computerPlayer.computerMABP(self.grid.gridLogic, func, depth, -100, 100, self.AI_black)
+                return self.computerPlayer.computerMABP(self.grid.gridLogic, func, depth, -1000, 1000,
+                                                        self.AI_black, self.turn_count)
         else:
             return None, None
 
@@ -339,7 +344,8 @@ class Othello:
                 return self.computerPlayer.computerRandom(self.grid.gridLogic, self.AI_white)
             else:
                 depth = self.AI_white_data[1]
-                return self.computerPlayer.computerMABP(self.grid.gridLogic, func, depth, -100, 100, self.AI_white)
+                return self.computerPlayer.computerMABP(self.grid.gridLogic, func, depth, -1000, 1000,
+                                                        self.AI_white, self.turn_count)
         else:
             return None, None
 
@@ -400,5 +406,6 @@ class Othello:
         self.grid.markNextMove(self.screen)
         self.grid.drawTurns(self.screen)
         self.grid.drawRollbackButton(self.screen)
-        # self.grid.drawBranchButton(self.screen)
+        self.grid.drawBranchButton(self.screen)
+        self.grid.drawPauseInfo(self.screen)
         pygame.display.update()

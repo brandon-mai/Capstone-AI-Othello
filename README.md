@@ -14,18 +14,29 @@ replaying games.
 'How can I use this', you ask. Here are a few simple things you need to do:
 - Fork, clone, download, or do whatever to get this repo on your local machine
 - Have Python 3.12 installed (or updated) (very advisable)
-- Install those in `requirements.txt` (will add later, trust)
+- Install those in `requirements.txt`
 - Run `main.py`
+
+Other than that, the menu's navigations is pretty self-explanatory. 
 <br>
 <br>
 
-## Adjustments
+## Basic adjustments
 This part was obliterated due to the help of `pygame-menu` lol, no need to tinker
 the code now as all things can be adjusted with Game Menu.
+<br>
+<br>
+
+## Advanced adjustments
+Head to `heuristics.py` and add your own heuristics / evaluating functions!
+
+In accordance with the indicated guidelines at the beginning of the file, of course.
+<br>
+<br>
 
 ## To be added *very* soon
-- [ ] More heuristics (somebody quick)
+- [x] More heuristics
 - [ ] Improve game record/rollback method (ongoing)
 - [ ] Folder for papers, etc. (should be done soon)
-- [ ] nope
+- [ ] nope nope nope
 - [ ] Auto recording moves of external engines with mss and opencv (hell no this hard)

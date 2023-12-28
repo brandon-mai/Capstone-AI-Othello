@@ -119,7 +119,7 @@ class Grid:
         else:
             turn_text = f'Turn : {self.GAME.turn_count}'
         text_img = self.font.render(turn_text, 1, 'White')
-        window.blit(text_img, (self.tile_size * 11.2, self.tile_size * 4))
+        window.blit(text_img, (self.tile_size * 11.2, self.tile_size * 3.5))
 
     def drawRollbackButton(self, window):
         tile = self.tile_size
@@ -134,6 +134,12 @@ class Grid:
             pygame.draw.rect(window, 'White', (tile * 10.8, tile * 8, tile * 1.6, tile))
             textImg = self.font.render('Branch', 1, 'Black')
             window.blit(textImg, (self.tile_size * 11.25, self.tile_size * 8.34))
+
+    def drawPauseInfo(self, window):
+        tile = self.tile_size
+        if not self.GAME.gameOver and not self.GAME.paused:
+            info = self.font.render('Press SPACE to pause', 1, 'White')
+            window.blit(info, (self.tile_size * 10.6, self.tile_size * 6))
 
     def pop_up(self):
         tile = self.tile_size
@@ -170,8 +176,12 @@ class Grid:
             panel.blit(game_text, (tile * 1.5, tile * 2.375))
 
             pygame.draw.rect(panel, 'White', (tile, tile * 3.5, tile * 2, tile))
-            settings_text = self.font.render('Settings', 1, 'Black')
-            panel.blit(settings_text, (tile * 1.6, tile * 3.875))
+            if self.GAME.mode == 0:
+                settings_text = self.font.render('Quit', 1, 'Black')
+                panel.blit(settings_text, (tile * 1.75, tile * 3.875))
+            else:
+                settings_text = self.font.render('Settings', 1, 'Black')
+                panel.blit(settings_text, (tile * 1.6, tile * 3.875))
 
             return panel
 

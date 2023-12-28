@@ -1,7 +1,8 @@
 import pygame
 import pygame_menu as pm
 import os
-from heuristics import *
+import heuristics
+from inspect import getmembers, isfunction
 
 # Settings Prompts
 
@@ -63,9 +64,9 @@ class Prompt:
         
         # Function Selection UI
         self.func_settings._theme.widget_alignment = pm.locals.ALIGN_LEFT
-        eval_func = [("Random Move", None),
-                     ("Coin Parity", coinParity),
-                     ("Ultimate (don't pick, this will break game", print)]
+        eval_func = [("Random Move", None)]
+        eval_func.extend(getmembers(heuristics, isfunction))
+        eval_func = list(filter(lambda option: option[0][0] != '_', eval_func))
         depth = [(str(num), num) for num in range(1, 6)]
         self.func_settings.add.dropselect(title="Black AI's Evaluating Function", dropselect_id='AI_black_func',
                                           items=eval_func, default=0)
@@ -118,6 +119,10 @@ class Prompt:
     def reselect(self):
         self.main_menu.enable()
 
+    def restart(self):
+        self.main_menu.reset(2)
+        self.main_menu.enable()
+
     def game_start(self):
         game_data = self.game_settings.get_input_data()
         func_data = self.func_settings.get_input_data()
@@ -161,9 +166,10 @@ class Prompt:
         self.height = new_height
         self.random_sprite = data['random_sprite']
 
+
 # Testing
 def main():
-    game_prompt = Prompt(500)
+    game_prompt = Prompt()
     tup = game_prompt.run()
     print(tup)
 

@@ -13,8 +13,12 @@ if __name__ == '__main__':
 
         if next_mode == 0:
             break
-        if reselect is True:
+        if reselect == 1:
             settings.reselect()
+            options = list(settings.run())
+            continue
+        elif reselect == 2:
+            settings.restart()
             options = list(settings.run())
             continue
 
