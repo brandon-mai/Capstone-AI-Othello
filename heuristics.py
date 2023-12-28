@@ -30,7 +30,7 @@ def mobility(grid, turn_count):
     moves[1], swappable_white = util.find_avail_moves_global(grid, 1)
     moves[-1], swappable_black = util.find_avail_moves_global(grid, -1)
 
-    # coeffcient:
+    # coefficients:
     corner = 3
     X = -4
     C = -3
@@ -62,54 +62,22 @@ def mobility(grid, turn_count):
                    (2, 7), (3, 7), (4, 7), (5, 7)]
 
     # calculate the total mobility
-    white_mobility = 2 / 5 * len(moves[1]) + 3 / 5 * len(frontier[-1])
-    black_mobility = 2 / 5 * len(moves[-1]) + 3 / 5 * len(frontier[1])
+    black_mobility = 2 / 5 * len(moves[1]) + 3 / 5 * len(frontier[-1])
+    white_mobility = 2 / 5 * len(moves[-1]) + 3 / 5 * len(frontier[1])
 
     # take into account the quality of the move
-    # if currentPlayer == 1:
-    #     for move in blackMoves:
-    #         if move in corner_square:
-    #             black_mobility += 6 * corner
-    #         if move in X_square:
-    #             black_mobility += 6 * X
-    #         if move in C_square:
-    #             black_mobility += 6*C
-    #         if move in edge_square:
-    #             black_mobility += 6*edge
-    #     for move in frontier[1]:
-    #         if move in corner_square:
-    #             black_mobility += 4 * corner
-    #         if move in X_square:
-    #             black_mobility += 4 * X   # not sure about this
-    #         if move in C_square:
-    #             black_mobility += 4 * C
-    #         if move in edge_square:
-    #             black_mobility += 4 * edge
+    for square in corner_square:
+        if grid[square[0]][square[1]] == 1:
+            black_mobility += corner
+        if grid[square[0]][square[1]] == -1:
+            white_mobility += corner
 
-    # for move in whiteMoves:
-    #     if move in corner_square:
-    #         white_mobility += 6 * corner
-    #     if move in X_square:
-    #         white_mobility += 6 * X
-    #     if move in C_square:
-    #         white_mobility += 6*C
-    #     if move in edge_square:
-    #         white_mobility += 6*edge
+    for square in X_square:
+        if grid[square[0]][square[1]] == 1:
+            black_mobility += X
+        if grid[square[0]][square[1]] == -1:
+            white_mobility += X
 
-    # for move in frontier[-1]:
-    #     if move in corner_square:
-    #         white_mobility += 4 * corner
-    #     if move in X_square:
-    #         white_mobility += 4 * X
-    #     if move in C_square:
-    #         white_mobility += 4 * C
-    #     if move in edge_square:
-    #         white_mobility += 4 * edge
-
-    # # Fix this ASAP, return only 1 value if possible
-    # return white_mobility, black_mobility, len(frontier[1]), len(frontier[-1])
-
-    # Temporary return value
     return black_mobility - white_mobility
 
 
@@ -124,10 +92,10 @@ def stability(grid, turn_count):
     black_stable = util.stable_disc(grid, 1)
     white_stable = util.stable_disc(grid, -1)
 
-    return len(black_stable) - len(white_stable)
+    return len(black_stable) - len(white_stable) - len(black_unstable) + len(white_unstable)
 
 
-def xSquare(grid, turn_count):
+def _xSquare(grid, turn_count):
     coordinates = (
         [1, 1], [6, 6],
         [6, 1], [1, 6],
@@ -139,7 +107,7 @@ def xSquare(grid, turn_count):
     return -5 * black_disks + 5 * white_disks
 
 
-def corner(grid, turn_count):
+def _corner(grid, turn_count):
     coordinates = (
         [0, 0], [0, 7],
         [7, 0], [7, 7],
@@ -151,7 +119,7 @@ def corner(grid, turn_count):
     return 10 * black_disks - 10 * white_disks
 
 
-def corner_occupancy(grid, turn_count):
+def _corner_occupancy(grid, turn_count):
     corner = [[0, 0], [0, 7], [7, 0], [7, 7]]
     white_corner = sum([1 if grid[cor[0]][cor[1]] == 1 else 0 for cor in corner])
     black_corner = sum([1 if grid[cor[0]][cor[1]] == -1 else 0 for cor in corner])
@@ -159,7 +127,7 @@ def corner_occupancy(grid, turn_count):
 
 
 # need to build dynamic weight
-def static_weight_beginning(grid, turn_count):
+def _static_weight_beginning(grid, turn_count):
     weight = [
         [120, -20, 40, 5, 5, 40, -20, 120],
         [-20, -80, -5, -5, -5, -5, -80, -20],
@@ -174,7 +142,7 @@ def static_weight_beginning(grid, turn_count):
     return res / 30
 
 
-def static_weight_ending(grid, turn_count):
+def _static_weight_ending(grid, turn_count):
     weight = [
         [120, -20, 20, 5, 5, 20, -20, 120],
         [-20, -40, 0, 0, 0, 0, -40, -20],
@@ -189,3 +157,16 @@ def static_weight_ending(grid, turn_count):
     return res / 20
 
 
+def iago(grid, turn_count):
+    white_stable = util.stable_disc(grid, -1)
+    edge_stability = 0
+    internal_stability = 0
+
+    for disks in util.stable_disc(grid, 1):
+        y, x = disks[0], disks[1]
+        if y in (0, 7) and x in (0, 7):
+            edge_stability += 70
+        elif y == 0 or y == 7 or x == 0 or x == 7:
+            edge_stability += 100
+        else:
+            internal_stability += 1

@@ -333,7 +333,7 @@ class Othello:
             else:
                 depth = self.AI_black_data[1]
                 return self.computerPlayer.computerMABP(self.grid.gridLogic, func, depth, -1000, 1000,
-                                                        self.AI_black, self.turn_count)
+                                                        self.AI_black, self.turn_count - 1)
         else:
             return None, None
 
@@ -345,7 +345,7 @@ class Othello:
             else:
                 depth = self.AI_white_data[1]
                 return self.computerPlayer.computerMABP(self.grid.gridLogic, func, depth, -1000, 1000,
-                                                        self.AI_white, self.turn_count)
+                                                        self.AI_white, self.turn_count - 1)
         else:
             return None, None
 
