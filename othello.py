@@ -273,7 +273,7 @@ class Othello:
                             self.RUN = False
 
     def update(self):
-        # AI_white"s turn
+        # AI_white's turn
         if self.currentPlayer == self.AI_white and not self.gameOver and not self.paused:
             new_time = pygame.time.get_ticks()
             if new_time - self.time >= 100:
@@ -294,7 +294,7 @@ class Othello:
                     self.currentPlayer *= -1
                     self.forfeited_turns = 0
 
-        # AI_black"s turn
+        # AI_black's turn
         if self.currentPlayer == self.AI_black and not self.gameOver and not self.paused:
             new_time = pygame.time.get_ticks()
             if new_time - self.time >= 100:
@@ -318,7 +318,7 @@ class Othello:
         self.grid.player1Score = self.grid.calculatePlayerScore(self.player1)
         self.grid.player2Score = self.grid.calculatePlayerScore(self.player2)
 
-        # human_player"s turn
+        # human_player's turn
         if self.currentPlayer == self.human_player and not self.gameOver:
             if self.check_forfeit():
                 return

@@ -97,7 +97,7 @@ def swappable_tiles_global(x, y, grid, current_player):
 
 
 def find_avail_moves_global(grid, current_player):
-    """Return a list of possible moves from currentPlayer"""
+    """Return 2 lists: a list of possible moves from current_player, and a list of flippable disks of enemy"""
     valid_cells = find_valid_cells_global(grid, current_player)
     playable_cells = []
     unstable_cells = []

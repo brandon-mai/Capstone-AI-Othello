@@ -99,15 +99,14 @@ class Grid:
              [(2, 3), (3, 4), (4, 4), (4, 5), (5, 2)]]
         ]
         grid = []
+        for y in range(rows):
+            line = []
+            for x in range(columns):
+                line.append(0)
+            grid.append(line)
 
         # # Start with random opening
         # opening = random.choice((range(len(opening_library))))
-        # for y in range(rows):
-        #     line = []
-        #     for x in range(columns):
-        #         line.append(0)
-        #     grid.append(line)
-        #
         # for black_token in opening_library[opening][0]:
         #     self.insertToken(grid, 1, black_token[0], black_token[1])
         #
@@ -244,7 +243,7 @@ class Grid:
     def markRecentMove(self, window):
         tile = self.tile_size
         move = self.GAME.recent_move
-        if move is not None:
+        if move is not None and not self.GAME.gameOver and not self.GAME.paused:
             pygame.draw.rect(window, 'Red',
                              (tile + (move[1] * tile) + tile * 0.375, tile + (move[0] * tile) + tile * 0.375,
                               tile * 0.25, tile * 0.25))
