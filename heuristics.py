@@ -2,7 +2,7 @@ import utility_functions as util
 
 
 # Heuristics
-# Functions must have 2 parameters: grid_object and turn_count
+# Functions MUST have 2 parameters: grid_object and turn_count
 # if you want to protect a function from being selectable, add '_' before the name
 # for example: _corner, _xSquare won't be selectable
 
@@ -95,37 +95,6 @@ def stability(grid, turn_count):
     return len(black_stable) - len(white_stable) - len(black_unstable) + len(white_unstable)
 
 
-def _xSquare(grid, turn_count):
-    coordinates = (
-        [1, 1], [6, 6],
-        [6, 1], [1, 6],
-    )
-
-    black_disks = sum([1 if grid[coor[0]][coor[1]] == 1 else 0 for coor in coordinates])
-    white_disks = sum([1 if grid[coor[0]][coor[1]] == -1 else 0 for coor in coordinates])
-
-    return -5 * black_disks + 5 * white_disks
-
-
-def _corner(grid, turn_count):
-    coordinates = (
-        [0, 0], [0, 7],
-        [7, 0], [7, 7],
-    )
-
-    black_disks = sum([1 if grid[coor[0]][coor[1]] == 1 else 0 for coor in coordinates])
-    white_disks = sum([1 if grid[coor[0]][coor[1]] == -1 else 0 for coor in coordinates])
-
-    return 10 * black_disks - 10 * white_disks
-
-
-def _corner_occupancy(grid, turn_count):
-    corner = [[0, 0], [0, 7], [7, 0], [7, 7]]
-    white_corner = sum([1 if grid[cor[0]][cor[1]] == 1 else 0 for cor in corner])
-    black_corner = sum([1 if grid[cor[0]][cor[1]] == -1 else 0 for cor in corner])
-    return 25 * white_corner - 25 * black_corner
-
-
 # need to build dynamic weight
 def _static_weight_beginning(grid, turn_count):
     weight = [
@@ -157,8 +126,7 @@ def _static_weight_ending(grid, turn_count):
     return res / 20
 
 
-def iago(grid, turn_count):
-    white_stable = util.stable_disc(grid, -1)
+def iago_bootleg(grid, turn_count):
     edge_stability = 0
     internal_stability = 0
 
@@ -169,4 +137,27 @@ def iago(grid, turn_count):
         elif y == 0 or y == 7 or x == 0 or x == 7:
             edge_stability += 100
         else:
-            internal_stability += 1
+            internal_stability += 10
+
+    for disks in util.stable_disc(grid, -1):
+        y, x = disks[0], disks[1]
+        if y in (0, 7) and x in (0, 7):
+            edge_stability -= 70
+        elif y == 0 or y == 7 or x == 0 or x == 7:
+            edge_stability -= 100
+        else:
+            internal_stability -= 10
+
+    mutual_access = sum([1 if tile == 0 else 0 for tile in grid])
+    black_access = len(util.find_avail_moves_global(grid, 1)[0])
+    white_access = len(util.find_avail_moves_global(grid, -1)[0])
+    p = black_access * 2 + mutual_access
+    o = white_access * 2 + mutual_access
+    current_mobility = (1000 * (p - o)/(p + o + 2)) // 1
+
+    potential_mobility = mobility(grid, turn_count)
+
+    ESAC = 312 + 6.24 * turn_count
+    CMAC = 50 + 2 * turn_count if turn_count <= 25 else 75 + turn_count
+
+    return (ESAC * edge_stability + 36 * internal_stability + CMAC * current_mobility + 99 * potential_mobility) / 100
