@@ -57,8 +57,8 @@ class Othello:
 
         # GAME REPLAYING #
         if self.mode <= 0:
-            pkg, self.imported_f_name = self.imported_f_path.split('/')
-            mod = importlib.import_module(f'.{self.imported_f_name[:-3:]}', package=pkg)
+            pkg, self.imported_f_name = self.imported_f_path.split("/")
+            mod = importlib.import_module(f".{self.imported_f_name[:-3:]}", package=pkg)
             self.data = mod.data
             self.is_recording = False
             self.is_appending = False
@@ -67,47 +67,47 @@ class Othello:
         # GAME RECORDING #
         if self.mode and self.is_recording:
             t = time.localtime()
-            self.exported_f_path = (f'game_records/Game_{t.tm_mday:0>2d}{t.tm_mon:0>2d}{str(t.tm_year % 100).zfill(2)}'
-                                    f'_{t.tm_hour:0>2d}{t.tm_min:0>2d}{t.tm_sec:0>2d}.py')
-            self.compatible_f_path = f'{self.exported_f_path[:-3]}.txt'
+            self.exported_f_path = (f"game_records/Game_{t.tm_mday:0>2d}{t.tm_mon:0>2d}{str(t.tm_year % 100).zfill(2)}"
+                                    f"_{t.tm_hour:0>2d}{t.tm_min:0>2d}{t.tm_sec:0>2d}.py")
+            self.compatible_f_path = f"{self.exported_f_path[:-3]}.txt"
             self.is_written = False
         ##################
 
         # GAME RECONSTRUCTING # UNDER CONSTRUCTION (how irony)
         if self.mode < 0:
-            true_turn = self.data['turn_count']
+            true_turn = self.data["turn_count"]
             self.gameOver = False
             for turn in range(true_turn):
-                board = self.data[f'board{turn}']
+                board = self.data[f"board{turn}"]
                 if turn == 0:
                     recent_move = None
                 elif turn == 1:
-                    recent_move = (self.data[f'recent_move{turn}'][0], self.data[f'recent_move{turn}'][1],
-                                   self.data[f'recent_move{turn}'][2] * -1)
+                    recent_move = (self.data[f"recent_move{turn}"][0], self.data[f"recent_move{turn}"][1],
+                                   self.data[f"recent_move{turn}"][2] * -1)
                 else:
-                    recent_move = (self.data[f'recent_move{turn}'][0], self.data[f'recent_move{turn}'][1],
-                                   self.data[f'recent_move{turn - 1}'][2])
+                    recent_move = (self.data[f"recent_move{turn}"][0], self.data[f"recent_move{turn}"][1],
+                                   self.data[f"recent_move{turn - 1}"][2])
                 self.states.append((board, recent_move))
-            self.grid.recoverGrid(self.data[f'board{true_turn}'])
-            self.recent_move = (self.data[f'recent_move{true_turn}'][0], self.data[f'recent_move{true_turn}'][1],
-                                self.data[f'recent_move{true_turn - 1}'][2])
+            self.grid.recoverGrid(self.data[f"board{true_turn}"])
+            self.recent_move = (self.data[f"recent_move{true_turn}"][0], self.data[f"recent_move{true_turn}"][1],
+                                self.data[f"recent_move{true_turn - 1}"][2])
             self.turn_count = true_turn + 1
 
             self.exported_f_path = self.imported_f_path
-            self.compatible_f_path = f'{self.exported_f_path[:-3]}.txt'
+            self.compatible_f_path = f"{self.exported_f_path[:-3]}.txt"
             self.mode = -self.mode
             self.is_appending = True
             self.is_written = False
         #######################
 
         # WINDOW CAPTION #
-        caption = (f'Othello'
-                   f'{f' - Replaying /{self.imported_f_path}' if self.mode == 0 else ''}'
-                   f'{f' - Recording to /{self.exported_f_path}' if self.is_recording else ''}'
-                   f'{f' - Appending to /{self.exported_f_path}' if self.is_appending else ''}'
-                   f'{f' - Human vs. AI' if abs(self.mode) == 1 else ' - AI vs. Human' if abs(self.mode) == 3 else ''}'
-                   f'{' - AI vs. AI' if self.mode == 2 else ''}'
-                   f'{' - I\'m feeling lucky' if self.random_sprite else ''}')
+        caption = (f"Othello"
+                   f"{f' - Replaying /{self.imported_f_path}' if self.mode == 0 else ''}"
+                   f"{f' - Recording to /{self.exported_f_path}' if self.is_recording else ''}"
+                   f"{f' - Appending to /{self.exported_f_path}' if self.is_appending else ''}"
+                   f"{' - Human vs. AI' if abs(self.mode) == 1 else ' - AI vs. Human' if abs(self.mode) == 3 else ''}"
+                   f"{' - AI vs. AI' if self.mode == 2 else ''}"
+                   f"{' - I\'m feeling lucky' if self.random_sprite else ''}")
         pygame.display.set_caption(caption)
         ##################
 
@@ -119,11 +119,11 @@ class Othello:
         elif self.mode == 3:
             self.human_player, self.AI_black, self.AI_white = (-1, 1, 0)
         elif self.mode == 0:
-            if self.data['game_mode'] == 1:
+            if self.data["game_mode"] == 1:
                 self.human_player, self.AI_black, self.AI_white = (1, 0, 0)
-            elif self.data['game_mode'] == 2:
+            elif self.data["game_mode"] == 2:
                 self.human_player, self.AI_black, self.AI_white = (0, 0, 0)
-            elif self.data['game_mode'] == 3:
+            elif self.data["game_mode"] == 3:
                 self.human_player, self.AI_black, self.AI_white = (-1, 0, 0)
         #############
 
@@ -232,48 +232,48 @@ class Othello:
                         if self.turn_count > 0:
                             self.turn_count -= 1
                         elif self.turn_count == 0:
-                            self.turn_count = self.data['turn_count']
-                        self.grid.recoverGrid(self.data[f'board{self.turn_count}'])
-                        self.recent_move = self.data[f'recent_move{self.turn_count}']
+                            self.turn_count = self.data["turn_count"]
+                        self.grid.recoverGrid(self.data[f"board{self.turn_count}"])
+                        self.recent_move = self.data[f"recent_move{self.turn_count}"]
                         if self.recent_move is None:
                             self.currentPlayer = self.player1
                         else:
-                            self.currentPlayer = self.data[f'recent_move{self.turn_count}'][2]
+                            self.currentPlayer = self.data[f"recent_move{self.turn_count}"][2]
                     if event.key == pygame.K_RIGHT:
-                        if self.turn_count < self.data['turn_count']:
+                        if self.turn_count < self.data["turn_count"]:
                             self.turn_count += 1
-                        elif self.turn_count == self.data['turn_count']:
+                        elif self.turn_count == self.data["turn_count"]:
                             self.turn_count = 0
-                        self.grid.recoverGrid(self.data[f'board{self.turn_count}'])
-                        self.recent_move = self.data[f'recent_move{self.turn_count}']
+                        self.grid.recoverGrid(self.data[f"board{self.turn_count}"])
+                        self.recent_move = self.data[f"recent_move{self.turn_count}"]
                         if self.recent_move is None:
                             self.currentPlayer = self.player1
                         else:
-                            self.currentPlayer = self.data[f'recent_move{self.turn_count}'][2]
+                            self.currentPlayer = self.data[f"recent_move{self.turn_count}"][2]
                 # Branch into new game record (UNDER CONSTRUCTION)
                 if event.type == pygame.MOUSEBUTTONDOWN and not self.gameOver and not self.paused:
                     if event.button == 1 and self.mode == 0 and self.currentPlayer == self.human_player:
                         x, y = pygame.mouse.get_pos()
                         if x >= tile * 10.8 and x <= tile * 12.4 and y >= tile * 8 and y <= tile * 9:
-                            self.NEXT_MODE = -self.data['game_mode']
+                            self.NEXT_MODE = -self.data["game_mode"]
                             t = time.localtime()
-                            self.APPEND_FILE_PATH = (f'game_records/{self.imported_f_name[:-3:]}'
-                                                     f'_{t.tm_mday:0>2d}{t.tm_mon:0>2d}{str(t.tm_year % 100).zfill(2)}'
-                                                     f'_{t.tm_hour:0>2d}{t.tm_min:0>2d}{t.tm_sec:0>2d}'
-                                                     f'_b{self.turn_count}.py')
-                            f = open(self.APPEND_FILE_PATH, 'w')
-                            f.write('data = {\n')
-                            f.write(f'\t"game_mode": {self.data['game_mode']},\n')
-                            f.write(f'\t"turn_count": {self.turn_count},\n')
+                            self.APPEND_FILE_PATH = (f"game_records/{self.imported_f_name[:-3:]}"
+                                                     f"_{t.tm_mday:0>2d}{t.tm_mon:0>2d}{str(t.tm_year % 100).zfill(2)}"
+                                                     f"_{t.tm_hour:0>2d}{t.tm_min:0>2d}{t.tm_sec:0>2d}"
+                                                     f"_b{self.turn_count}.py")
+                            f = open(self.APPEND_FILE_PATH, "w")
+                            f.write("data = {\n")
+                            f.write(f"\t'game_mode': {self.data['game_mode']},\n")
+                            f.write(f"\t'turn_count': {self.turn_count},\n")
                             for turn in range(self.turn_count + 1):
-                                f.write(f'\t"board{turn}": {str(self.data[f'board{turn}'])},\n')
-                                f.write(f'\t"recent_move{turn}": {str(self.data[f'recent_move{turn}'])},\n')
-                            f.write('}')
+                                f.write(f"\t'board{turn}': {str(self.data[f'board{turn}'])},\n")
+                                f.write(f"\t'recent_move{turn}': {str(self.data[f'recent_move{turn}'])},\n")
+                            f.write("}")
                             f.close()
                             self.RUN = False
 
     def update(self):
-        # AI_white's turn
+        # AI_white"s turn
         if self.currentPlayer == self.AI_white and not self.gameOver and not self.paused:
             new_time = pygame.time.get_ticks()
             if new_time - self.time >= 100:
@@ -294,7 +294,7 @@ class Othello:
                     self.currentPlayer *= -1
                     self.forfeited_turns = 0
 
-        # AI_black's turn
+        # AI_black"s turn
         if self.currentPlayer == self.AI_black and not self.gameOver and not self.paused:
             new_time = pygame.time.get_ticks()
             if new_time - self.time >= 100:
@@ -318,7 +318,7 @@ class Othello:
         self.grid.player1Score = self.grid.calculatePlayerScore(self.player1)
         self.grid.player2Score = self.grid.calculatePlayerScore(self.player2)
 
-        # human_player's turn
+        # human_player"s turn
         if self.currentPlayer == self.human_player and not self.gameOver:
             if self.check_forfeit():
                 return
@@ -365,37 +365,37 @@ class Othello:
         if self.is_recording or self.is_appending:
             if self.gameOver and self.turn_count > 1 and not self.is_written:
                 self.states = list(filter(lambda s: s is not None, self.states))
-                f = open(self.exported_f_path, 'w')
-                f.write('data = {\n')
-                f.write(f'\t"game_mode": {self.mode},\n')
-                f.write(f'\t"turn_count": {self.turn_count - 1},\n')
+                f = open(self.exported_f_path, "w")
+                f.write("data = {\n")
+                f.write(f"\t'game_mode': {self.mode},\n")
+                f.write(f"\t'turn_count': {self.turn_count - 1},\n")
 
                 # Old move recording method
                 for turn in range(self.turn_count):
                     board, recent_move = self.states[turn]
                     next_mover = self.states[turn + 1][1][2] if turn < self.turn_count - 1 else None
-                    f.write(f'\t"board{turn}": {str(board)},\n')
+                    f.write(f"\t'board{turn}': {str(board)},\n")
                     if recent_move is None:
-                        f.write(f'\t"recent_move{turn}": {str(recent_move)},\n')
+                        f.write(f"\t'recent_move{turn}': {str(recent_move)},\n")
                         continue
-                    f.write(f'\t"recent_move{turn}": ({recent_move[0]}, {recent_move[1]}, {next_mover}),\n')
+                    f.write(f"\t'recent_move{turn}': ({recent_move[0]}, {recent_move[1]}, {next_mover}),\n")
 
                 # New move sequence recording method
-                col_sequence = 'abcdefgh'
+                col_sequence = "abcdefgh"
                 move_sequence = list()
                 for state in self.states[1:]:
                     y, x = state[1][:-1]
-                    move = f'{col_sequence[x]}{y + 1}'
+                    move = f"{col_sequence[x]}{y + 1}"
                     move_sequence.append(move)
-                move_sequence = ' '.join(move_sequence)
-                # f.write(f'\t"move_sequence": "{move_sequence}"\n')
+                move_sequence = " ".join(move_sequence)
+                # f.write(f"\t"move_sequence": "{move_sequence}"\n")
 
                 # Writing to additional compatible text file
-                f_txt = open(self.compatible_f_path, 'w')
+                f_txt = open(self.compatible_f_path, "w")
                 f_txt.write(move_sequence)
                 f_txt.close()
 
-                f.write('}')
+                f.write("}")
                 self.is_written = True
                 f.close()
 
