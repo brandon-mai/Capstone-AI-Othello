@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/AI Othello.iml" filepath="$PROJECT_DIR$/.idea/AI Othello.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../Nuclear Site/.idea/Nuclear Site.iml" filepath="$PROJECT_DIR$/../Nuclear Site/.idea/Nuclear Site.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../Realtime-OpenCV-Chess-master/.idea/Realtime-OpenCV-Chess-master.iml" filepath="$PROJECT_DIR$/../Realtime-OpenCV-Chess-master/.idea/Realtime-OpenCV-Chess-master.iml" />
+    </modules>
+  </component>
+</project>

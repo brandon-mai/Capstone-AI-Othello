@@ -156,6 +156,7 @@ class Othello:
                     if self.gameOver:
                         # Play Again
                         if x >= tile * 4 and x <= tile * 6 and y >= tile * 4.5 and y <= tile * 5.5:
+                            print('\n', '=' * 88, '\n')
                             if self.is_appending:
                                 self.RESELECT = 1
                                 self.NEXT_MODE = self.mode
@@ -169,7 +170,7 @@ class Othello:
                             self.computerPlayer.evaluated.clear()
                         # To Settings
                         if x >= tile * 4 and x <= tile * 6 and y >= tile * 6 and y <= tile * 7:
-                            print('\nPeace!!!\n')
+                            print('\n', '=' * 88, '\n')
                             self.RESELECT = 1
                             self.NEXT_MODE = self.mode
                             self.RUN = False

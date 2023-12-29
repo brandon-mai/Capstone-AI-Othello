@@ -30,7 +30,8 @@ class ComputerPlayer:
             [-20, -80, -5, -5, -5, -5, -80, -20],
             [120, -20, 40, 5, 5, 40, -20, 120],
         ]
-        return sorted(moves, key=lambda move: static_weight[move[0]][move[1]], reverse=True)
+        moves_sorted = sorted(moves, key=lambda move: static_weight[move[0]][move[1]], reverse=True)
+        return moves_sorted[::player]  # Decreasing if player = 1, increasing if player = -1
 
     def move_ordering_shallow(self, grid, heuristics, player):
         newGrid = copy.deepcopy(grid)
@@ -49,7 +50,8 @@ class ComputerPlayer:
             scores.append(value)
             newGrid = copy.deepcopy(grid)
 
-        return sorted(avail_moves, key=lambda move: scores[avail_moves.index(move)], reverse=True)
+        moves_sorted = sorted(avail_moves, key=lambda move: scores[avail_moves.index(move)], reverse=True)
+        return moves_sorted[::player]
 
     def RANDOM(self, grid, player):
         availMoves = self.grid.findAvailMoves(self.grid.gridLogic, player)
@@ -169,6 +171,7 @@ class ComputerPlayer:
         if screening is False:
             availMoves = self.move_ordering_shallow(grid, heuristics, player)
             screening = True
+            ply = depth - 2
 
         if player > 0:
             bestScore = float('-inf')
