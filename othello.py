@@ -2,9 +2,10 @@ import pygame
 import copy
 import time
 import importlib
+import sys
 from grid import Grid
 from computer import ComputerPlayer
-from heuristics import *
+from evaluating_functions import *
 
 
 # Othello: main game object, responsible for assigning turns and updating board
@@ -165,8 +166,10 @@ class Othello:
                             self.recent_move = None
                             self.states = list()
                             self.turn_count = 0 if self.mode == 0 else 1
+                            self.computerPlayer.evaluated.clear()
                         # To Settings
                         if x >= tile * 4 and x <= tile * 6 and y >= tile * 6 and y <= tile * 7:
+                            print('\nPeace!!!\n')
                             self.RESELECT = 1
                             self.NEXT_MODE = self.mode
                             self.RUN = False
@@ -329,11 +332,18 @@ class Othello:
         if self.AI_black_data is not None:
             func = self.AI_black_data[0]
             if func is None:
-                return self.computerPlayer.computerRandom(self.grid.gridLogic, self.AI_black)
+                return self.computerPlayer.RANDOM(self.grid.gridLogic, self.AI_black)
             else:
                 depth = self.AI_black_data[1]
-                return self.computerPlayer.computerMABP(self.grid.gridLogic, func, depth, -1000, 1000,
-                                                        self.AI_black, self.turn_count - 1)
+                self.computerPlayer.eval_counter = 0
+                start_time = time.time()
+                cell, score = self.computerPlayer.MINIMAX_ABP_EXPERIMENTAL(self.grid.gridLogic, func, depth, -1000, 1000,
+                                                       self.AI_black, self.turn_count - 1)
+                print(f"Turn {self.turn_count} Black considered {self.computerPlayer.eval_counter} boards, "
+                      f"stored {len(self.computerPlayer.evaluated)} boards, "
+                      f"took{time.time() - start_time: .5f} seconds")
+                self.computerPlayer.eval_counter = 0
+                return cell, score
         else:
             return None, None
 
@@ -341,11 +351,12 @@ class Othello:
         if self.AI_white_data is not None:
             func = self.AI_white_data[0]
             if func is None:
-                return self.computerPlayer.computerRandom(self.grid.gridLogic, self.AI_white)
+                return self.computerPlayer.RANDOM(self.grid.gridLogic, self.AI_white)
             else:
                 depth = self.AI_white_data[1]
-                return self.computerPlayer.computerMABP(self.grid.gridLogic, func, depth, -1000, 1000,
-                                                        self.AI_white, self.turn_count - 1)
+                cell, score = self.computerPlayer.MINIMAX_ABP(self.grid.gridLogic, func, depth, -1000, 1000,
+                                                              self.AI_white, self.turn_count - 1)
+                return cell, score
         else:
             return None, None
 
