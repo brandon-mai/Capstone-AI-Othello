@@ -6,7 +6,7 @@ import utility_functions as util
 # if you want to protect a function from being selectable, add '_' before the name
 # for example: _corner, _xSquare won't be selectable
 
-def coin_parity(grid, turn_count):
+def parity(grid, turn_count):
     # Direction 1: maximizing B/W disks ratio
     B = 0
     W = 0
@@ -50,7 +50,7 @@ def mobility(grid, turn_count):
 
                 for direction in valid_directions:
                     if (grid[direction[0]][direction[1]] == 0 and (direction[0], direction[1]) not in frontier[player]
-                            and (direction[0], direction[1] not in moves[player * -1])):
+                            and ((direction[0], direction[1]) not in moves[player * -1])):
                         frontier[player].append((direction[0], direction[1]))
                         break
 
@@ -93,37 +93,6 @@ def stability(grid, turn_count):
     white_stable = util.stable_disc(grid, -1)
 
     return len(black_stable) - len(white_stable) - len(black_unstable) + len(white_unstable)
-
-
-# need to build dynamic weight
-def _static_weight_beginning(grid, turn_count):
-    weight = [
-        [120, -20, 40, 5, 5, 40, -20, 120],
-        [-20, -80, -5, -5, -5, -5, -80, -20],
-        [40, -5, 25, 3, 3, 25, -5, 40],
-        [5, -5, 3, 3, 3, 3, -5, 5],
-        [5, -5, 3, 3, 3, 3, -5, 5],
-        [40, -5, 25, 3, 3, 25, -5, 40],
-        [-20, -80, -5, -5, -5, -5, -80, -20],
-        [120, -20, 40, 5, 5, 40, -20, 120],
-    ]
-    res = (sum([int(grid[i][j]) * int(weight[i][j]) for i in range(0, 8) for j in range(0, 8)]))
-    return res / 30
-
-
-def _static_weight_ending(grid, turn_count):
-    weight = [
-        [120, -20, 20, 5, 5, 20, -20, 120],
-        [-20, -40, 0, 0, 0, 0, -40, -20],
-        [20, 0, 0, 0, 0, 0, 0, 20],
-        [5, 0, 0, 0, 0, 0, 0, 5],
-        [5, 0, 0, 0, 0, 0, 0, 5],
-        [20, 0, 0, 0, 0, 0, 0, 20],
-        [-20, -40, 0, 0, 0, 0, -40, -20],
-        [120, -20, 20, 5, 5, 20, -20, 120],
-    ]
-    res = sum([int(grid[i][j]) * int(weight[i][j]) for i in range(0, 8) for j in range(0, 8)])
-    return res / 20
 
 
 def iago_bootleg(grid, turn_count):
