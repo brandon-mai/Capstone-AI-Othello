@@ -250,7 +250,7 @@ class Grid:
 
     def markNextMove(self, window):
         tile = self.tile_size
-        if self.GAME.mode == 0 and not self.GAME.gameOver:
+        if self.GAME.mode == 0 and not self.GAME.gameOver and not self.GAME.paused:
             turn = self.GAME.turn_count
             if turn < self.GAME.data['turn_count']:
                 move = self.GAME.data[f'recent_move{turn + 1}']

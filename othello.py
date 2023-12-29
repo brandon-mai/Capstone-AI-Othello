@@ -254,27 +254,27 @@ class Othello:
                             self.currentPlayer = self.player1
                         else:
                             self.currentPlayer = self.data[f"recent_move{self.turn_count}"][2]
-                # Branch into new game record (UNDER CONSTRUCTION)
-                if event.type == pygame.MOUSEBUTTONDOWN and not self.gameOver and not self.paused:
-                    if event.button == 1 and self.mode == 0 and self.currentPlayer == self.human_player:
-                        x, y = pygame.mouse.get_pos()
-                        if x >= tile * 10.8 and x <= tile * 12.4 and y >= tile * 8 and y <= tile * 9:
-                            self.NEXT_MODE = -self.data["game_mode"]
-                            t = time.localtime()
-                            self.APPEND_FILE_PATH = (f"game_records/{self.imported_f_name[:-3:]}"
-                                                     f"_{t.tm_mday:0>2d}{t.tm_mon:0>2d}{str(t.tm_year % 100).zfill(2)}"
-                                                     f"_{t.tm_hour:0>2d}{t.tm_min:0>2d}{t.tm_sec:0>2d}"
-                                                     f"_b{self.turn_count}.py")
-                            f = open(self.APPEND_FILE_PATH, "w")
-                            f.write("data = {\n")
-                            f.write(f"\t'game_mode': {self.data['game_mode']},\n")
-                            f.write(f"\t'turn_count': {self.turn_count},\n")
-                            for turn in range(self.turn_count + 1):
-                                f.write(f"\t'board{turn}': {str(self.data[f'board{turn}'])},\n")
-                                f.write(f"\t'recent_move{turn}': {str(self.data[f'recent_move{turn}'])},\n")
-                            f.write("}")
-                            f.close()
-                            self.RUN = False
+                # # Branch into new game record (it broken lol)
+                # if event.type == pygame.MOUSEBUTTONDOWN and not self.gameOver and not self.paused:
+                #     if event.button == 1 and self.mode == 0 and self.currentPlayer == self.human_player:
+                #         x, y = pygame.mouse.get_pos()
+                #         if x >= tile * 10.8 and x <= tile * 12.4 and y >= tile * 8 and y <= tile * 9:
+                #             self.NEXT_MODE = -self.data["game_mode"]
+                #             t = time.localtime()
+                #             self.APPEND_FILE_PATH = (f"game_records/{self.imported_f_name[:-3:]}"
+                #                                      f"_{t.tm_mday:0>2d}{t.tm_mon:0>2d}{str(t.tm_year % 100).zfill(2)}"
+                #                                      f"_{t.tm_hour:0>2d}{t.tm_min:0>2d}{t.tm_sec:0>2d}"
+                #                                      f"_b{self.turn_count}.py")
+                #             f = open(self.APPEND_FILE_PATH, "w")
+                #             f.write("data = {\n")
+                #             f.write(f"\t'game_mode': {self.data['game_mode']},\n")
+                #             f.write(f"\t'turn_count': {self.turn_count},\n")
+                #             for turn in range(self.turn_count + 1):
+                #                 f.write(f"\t'board{turn}': {str(self.data[f'board{turn}'])},\n")
+                #                 f.write(f"\t'recent_move{turn}': {str(self.data[f'recent_move{turn}'])},\n")
+                #             f.write("}")
+                #             f.close()
+                #             self.RUN = False
 
     def update(self):
         # AI_white's turn
@@ -355,7 +355,7 @@ class Othello:
                 return self.computerPlayer.RANDOM(self.grid.gridLogic, self.AI_white)
             else:
                 depth = self.AI_white_data[1]
-                cell, score = self.computerPlayer.MINIMAX_ABP(self.grid.gridLogic, func, depth, -1000, 1000,
+                cell, score = self.computerPlayer.MINIMAX_ABP_EXPERIMENTAL(self.grid.gridLogic, func, depth, -1000, 1000,
                                                               self.AI_white, self.turn_count - 1)
                 return cell, score
         else:
@@ -418,6 +418,6 @@ class Othello:
         self.grid.markNextMove(self.screen)
         self.grid.drawTurns(self.screen)
         self.grid.drawRollbackButton(self.screen)
-        self.grid.drawBranchButton(self.screen)
+        # self.grid.drawBranchButton(self.screen)
         self.grid.drawPauseInfo(self.screen)
         pygame.display.update()
