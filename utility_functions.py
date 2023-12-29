@@ -1,7 +1,7 @@
 import pygame
 
 
-# utility functions, needed for grid.py and heuristics.py
+# utility functions, needed for grid.py and evaluating_functions.py
 # important file, modifying this could break some (many) other functionalities
 
 def directions(x, y, minX=0, minY=0, maxX=7, maxY=7):
@@ -158,3 +158,23 @@ def stable_disc(grid, player):
             result.append(coor)
 
     return result
+
+
+def frontier_disc(grid, player):
+    opponent_moves, s = find_avail_moves_global(grid, -player)
+    frontier = list()
+    for gridX, row in enumerate(grid):
+        for gridY, col in enumerate(row):
+            if grid[gridX][gridY] == player:
+                valid_directions = []
+                if gridX != 0: valid_directions.append((gridX - 1, gridY))
+                if gridX != 7: valid_directions.append((gridX + 1, gridY))
+                if gridY != 0: valid_directions.append((gridX, gridY - 1))
+                if gridY != 7: valid_directions.append((gridX, gridY + 1))
+
+                for direction in valid_directions:
+                    x, y = direction
+                    if grid[x][y] == 0 and (x, y) not in frontier and (x, y) not in opponent_moves:
+                        frontier.append((direction[0], direction[1]))
+                        break
+    return frontier
