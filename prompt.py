@@ -67,7 +67,7 @@ class Prompt:
         eval_func = [("Random Move", None)]
         eval_func.extend(getmembers(heuristics, isfunction))
         eval_func = list(filter(lambda option: option[0][0] != '_', eval_func))
-        depth = [(str(num), num) for num in range(1, 6)]
+        depth = [(str(num), num) for num in range(1, 9)]
         self.func_settings.add.dropselect(title="Black AI's Evaluating Function", dropselect_id='AI_black_func',
                                           items=eval_func, default=0)
         self.func_settings.add.label(title='')
