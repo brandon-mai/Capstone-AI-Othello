@@ -15,11 +15,7 @@ class Othello:
     def __init__(self, mode: int, is_recording: bool,
                  AI_black: tuple, AI_white: tuple, imported_file_path: str,
                  screen_height: int = 600, random_sprite: bool = False):
-        """
-        :param mode: 0: replay | 1: human vs. AI | 2: AI vs. AI | 3: AI vs. engine
-        :param is_recording: whether the current game is being recorded
-        :param imported_file_path: relative path to game record for replay
-        """
+
         pygame.init()
         self.mode = mode
         self.is_recording = is_recording
@@ -167,6 +163,7 @@ class Othello:
                             self.recent_move = None
                             self.states = list()
                             self.turn_count = 0 if self.mode == 0 else 1
+                            print(sys.getsizeof(self.computerPlayer.evaluated))
                             self.computerPlayer.evaluated.clear()
                         # To Settings
                         if x >= tile * 4 and x <= tile * 6 and y >= tile * 6 and y <= tile * 7:
