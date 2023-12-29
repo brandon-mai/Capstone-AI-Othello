@@ -23,7 +23,7 @@ class Prompt:
         BLACK = (0, 0, 0)
         WHITE = (255, 255, 255)
         theme = pm.themes.THEME_DARK.copy()
-        image = pm.baseimage.BaseImage(image_path='assets/cool.jpg', drawing_mode=pm.baseimage.IMAGE_MODE_FILL)
+        image = pm.baseimage.BaseImage(image_path='assets/othellooooo.jpg', drawing_mode=pm.baseimage.IMAGE_MODE_FILL)
         image.apply_image_function(image_function=lambda r, g, b, a: (r * 0.3, g * 0.3, b * 0.3, a))
         theme.background_color = image
         theme.title_background_color = (255, 255, 255, 0)
@@ -55,6 +55,7 @@ class Prompt:
                      ("AI vs. Human", 3)]
         self.game_settings.add.selector(title="Game Mode\t", selector_id='game_mode',
                                         items=game_mode, default=0)
+        self.game_settings.add.label(title='First is Black player and moves first, second is White player')
         self.game_settings.add.label(title='')
         self.game_settings.add.toggle_switch(title="Game recording", toggleswitch_id="is_recording", default=False)
         self.game_settings.add.label(title='')
@@ -68,11 +69,13 @@ class Prompt:
         eval_func.extend(getmembers(evaluating_functions, isfunction))
         eval_func = list(filter(lambda option: option[0][0] != '_', eval_func))
         depth = [(str(num), num) for num in range(1, 9)]
+        self.func_settings.add.label(title='Only matter is Black player is AI')
         self.func_settings.add.dropselect(title="Black AI's Evaluating Function", dropselect_id='AI_black_func',
                                           items=eval_func, default=0)
         self.func_settings.add.label(title='')
         self.func_settings.add.selector(title="Depth\t", items=depth, selector_id="AI_black_func_depth", default=2)
         self.func_settings.add.label(title='')
+        self.func_settings.add.label(title='Only matter is White player is AI')
         self.func_settings.add.dropselect(title="White AI's Evaluating Function", dropselect_id='AI_white_func',
                                           items=eval_func, default=0)
         self.func_settings.add.label(title='')

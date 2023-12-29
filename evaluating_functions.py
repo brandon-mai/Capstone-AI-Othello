@@ -95,7 +95,7 @@ def stability(grid, turn_count):
     return len(black_stable) - len(white_stable) - len(black_unstable) + len(white_unstable)
 
 
-def iago_bootleg(grid, turn_count):
+def _iago_bootleg(grid, turn_count):
     edge_stability = 0
     internal_stability = 0
 

@@ -3,7 +3,7 @@ import random
 from utility_functions import *
 
 # Grid and Token classes definition
-# do not touch this file, my man
+# For game board, UI
 
 
 class Grid:

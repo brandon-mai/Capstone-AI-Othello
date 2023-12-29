@@ -1,5 +1,4 @@
 # Pygame Othello for Capstone Project
-Or Pygello, because... y'know, Pygame and Othello... ahahaha, yeah I'll see myself out.
 
 ## What is this?
 A Pygame implementation of the game Othello. We made this and added several
@@ -11,19 +10,29 @@ replaying games.
 <br>
 
 ## Getting started
-'How can I use this', you ask. Here are a few simple things you need to do:
-- Fork, clone, download, or do whatever to get this repo on your local machine
-- Have Python 3.12 installed (or updated) (very advisable)
-- Install those in `requirements.txt`
-- Run `main.py`
-
-Other than that, the menu's navigations is pretty self-explanatory. 
+Get this on your machine by putting this in Git Bash
+```
+git clone https://github.com/brandon-mai/Capstone-AI-Othello.git
+```
+Then install by heading to the repo folder and running this in Terminal
+```
+pip install -q -r requirements.txt
+```
+Final thing
+```
+python main.py
+```
 <br>
 <br>
 
 ## Basic adjustments
-This part was obliterated due to the help of `pygame-menu` lol, no need to tinker
-the code now as all things can be adjusted with Game Menu.
+The game menu is pretty self-explanatory.
+- Play: where you play. Select the game mode, whether you want to record the game,
+then AI's evaluating function and depth (if needed).
+- Replay: replay recorded games. You can navigate through moves with left and right
+arrow keys.
+- UI Settings: UI settings. Toggle "I'm feeling lucky" on if you want random (bad)
+board designs.
 <br>
 <br>
 
@@ -33,10 +42,3 @@ Head to `heuristics.py` and add your own heuristics / evaluating functions!
 In accordance with the indicated guidelines at the beginning of the file, of course.
 <br>
 <br>
-
-## To be added *very* soon
-- [x] More heuristics
-- [ ] Improve game record/rollback method (ongoing)
-- [ ] Folder for papers, etc. (should be done soon)
-- [ ] nope nope nope
-- [ ] Auto recording moves of external engines with mss and opencv (hell no this hard)
