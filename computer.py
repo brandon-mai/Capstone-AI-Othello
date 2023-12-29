@@ -171,7 +171,7 @@ class ComputerPlayer:
         if screening is False:
             availMoves = self.move_ordering_shallow(grid, heuristics, player)
             screening = True
-            ply = depth - 2
+            ply = depth - 1 if depth % 2 == 0 else depth - 2
 
         if player > 0:
             bestScore = float('-inf')
