@@ -1,8 +1,8 @@
 import pygame
 import pygame_menu as pm
 import os
-import heuristics
-from inspect import getmembers, isfunction
+import evaluating_functions
+from inspect import getmembers, isfunction, ismethod
 
 # Settings Prompts
 
@@ -53,8 +53,8 @@ class Prompt:
         game_mode = [("Human vs. AI", 1),
                      ("AI vs. AI", 2),
                      ("AI vs. Human", 3)]
-        self.game_settings.add.dropselect(title="Game Mode", dropselect_id='game_mode',
-                                          items=game_mode, default=0)
+        self.game_settings.add.selector(title="Game Mode\t", selector_id='game_mode',
+                                        items=game_mode, default=0)
         self.game_settings.add.label(title='')
         self.game_settings.add.toggle_switch(title="Game recording", toggleswitch_id="is_recording", default=False)
         self.game_settings.add.label(title='')
@@ -65,7 +65,7 @@ class Prompt:
         # Function Selection UI
         self.func_settings._theme.widget_alignment = pm.locals.ALIGN_LEFT
         eval_func = [("Random Move", None)]
-        eval_func.extend(getmembers(heuristics, isfunction))
+        eval_func.extend(getmembers(evaluating_functions, isfunction))
         eval_func = list(filter(lambda option: option[0][0] != '_', eval_func))
         depth = [(str(num), num) for num in range(1, 9)]
         self.func_settings.add.dropselect(title="Black AI's Evaluating Function", dropselect_id='AI_black_func',
