@@ -130,6 +130,12 @@ class Othello:
         self.NEXT_MODE = 0
         self.APPEND_FILE_PATH = None
 
+        # BENCHMARKING VARIABLES #
+        self.board_evaluated = 0
+        self.movemaking_time = 0
+        self.turn_taken = 0
+        #########################
+
     def run(self):
         while self.RUN is True:
             self.input()
@@ -165,6 +171,16 @@ class Othello:
                             self.turn_count = 0 if self.mode == 0 else 1
                             print(sys.getsizeof(self.computerPlayer.evaluated))
                             self.computerPlayer.evaluated.clear()
+
+                            # f = open('transposition_table_comparison.txt', 'a')
+                            # f.write(f"{self.board_evaluated / self.turn_taken: .0f} "
+                            #         f"{self.movemaking_time / self.turn_taken: .5f} "
+                            #         f"{1 if self.grid.player1Score > self.grid.player2Score else -1 if self.grid.player1Score < self.grid.player2Score else 0}\n")
+                            # f.close()
+                            self.board_evaluated = 0
+                            self.movemaking_time = 0
+                            self.turn_taken = 0
+
                         # To Settings
                         if x >= tile * 4 and x <= tile * 6 and y >= tile * 6 and y <= tile * 7:
                             print('\n', '=' * 88, '\n')
@@ -335,11 +351,15 @@ class Othello:
                 depth = self.AI_black_data[1]
                 self.computerPlayer.eval_counter = 0
                 start_time = time.time()
-                cell, score = self.computerPlayer.MINIMAX_ABP_EXPERIMENTAL(self.grid.gridLogic, func, depth, -1000, 1000,
-                                                       self.AI_black, self.turn_count - 1)
+                cell, score = self.computerPlayer.MINIMAX_ABP(self.grid.gridLogic, func, depth, -1000, 1000,
+                                                              self.AI_black, self.turn_count - 1)
+                time_taken = time.time() - start_time
                 print(f"Turn {self.turn_count} Black considered {self.computerPlayer.eval_counter} boards, "
                       f"stored {len(self.computerPlayer.evaluated)} boards, "
-                      f"took{time.time() - start_time: .5f} seconds")
+                      f"took{time_taken: .5f} seconds")
+                self.board_evaluated += self.computerPlayer.eval_counter
+                self.movemaking_time += time_taken
+                self.turn_taken += 1
                 self.computerPlayer.eval_counter = 0
                 return cell, score
         else:
@@ -352,7 +372,7 @@ class Othello:
                 return self.computerPlayer.RANDOM(self.grid.gridLogic, self.AI_white)
             else:
                 depth = self.AI_white_data[1]
-                cell, score = self.computerPlayer.MINIMAX_ABP_EXPERIMENTAL(self.grid.gridLogic, func, depth, -1000, 1000,
+                cell, score = self.computerPlayer.MINIMAX_ABP(self.grid.gridLogic, func, depth, -1000, 1000,
                                                               self.AI_white, self.turn_count - 1)
                 return cell, score
         else:

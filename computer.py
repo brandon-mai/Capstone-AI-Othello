@@ -50,7 +50,8 @@ class ComputerPlayer:
             scores.append(value)
             newGrid = copy.deepcopy(grid)
 
-        moves_sorted = sorted(avail_moves, key=lambda move: scores[avail_moves.index(move)], reverse=True)
+        high_to_low = True if player == 1 else False
+        moves_sorted = sorted(avail_moves, key=lambda move: scores[avail_moves.index(move)], reverse=high_to_low)
         return moves_sorted[::player]
 
     def RANDOM(self, grid, player):
