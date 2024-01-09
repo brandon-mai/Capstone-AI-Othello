@@ -6,6 +6,8 @@ features to support researching purposes.
 
 Aside from playing Othello, this program is also capable of recording and
 replaying games.
+
+Python 3.12 recommended.
 <br>
 <br>
 
